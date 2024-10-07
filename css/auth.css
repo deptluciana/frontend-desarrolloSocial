@@ -1,0 +1,168 @@
+
+/* Estilos del modal */
+.modal {
+  display: none; /* Ocultamos el modal por defecto */
+  position: fixed; /* Posicionamiento fijo */
+  z-index: 1000; /* Asegura que esté por encima de otros elementos */
+  left: 0; /* Alineación izquierda */
+  top: 0; /* Alineación superior */
+  width: 100%; /* Ancho total */
+  height: 100%; /* Altura total */
+  overflow: hidden; /* Evita el desplazamiento */
+  background-color: rgba(0, 0, 0, 0.5); /* Fondo semi-transparente */
+}
+
+.modal-content {
+  position: absolute; /* Posicionamiento absoluto para centrar */
+  top: 50%; /* Coloca la parte superior en el 50% de la altura de la ventana */
+  left: 50%; /* Coloca el lado izquierdo en el 50% del ancho de la ventana */
+  transform: translate(-50%, -50%); /* Ajusta para centrar el modal */
+  background-color: #fefefe; /* Fondo blanco para el contenido del modal */
+  padding: 20px; /* Relleno interno */
+  border: 1px solid #888; /* Borde del modal */
+  width: 80%; /* Ancho del modal */
+  max-width: 500px; /* Ancho máximo para pantallas grandes */
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3); 
+  border-radius: 8px; 
+}
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-50px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Estilos del formulario */
+form {
+  display: flex;
+  flex-direction: column;
+}
+
+label {
+  font-size: 14px;
+  margin-bottom: 5px;
+  text-align: left;
+}
+
+input {
+  padding: 7px;
+  margin-bottom: 12px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+button[type="submit"] {
+  padding: 10px;
+  font-size: 16px;
+  background-color: rgb(0, 119, 255);
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+
+button[type="submit"]:hover {
+  background-color: #0077cc;
+}
+
+/* Estilos del enlace para recuperar la contraseña */
+#forgotPassword {
+  color: gray;
+  text-decoration: none;
+  font-size: 14px;
+  transition: color 0.3s;
+}
+
+#forgotPassword:hover {
+  text-decoration: underline;
+  color: #007bff;
+}
+
+/* Estilos del botón de cerrar */
+.close {
+  position: fixed;
+  top: 10px;
+  right: 20px;
+  font-size: 30px;
+  cursor: pointer;
+  color: #ffffff;
+  transition: color 0.3s ease;
+}
+
+.close:hover {
+  color: black;
+}
+
+/* Estilos responsivos */
+@media (max-width: 768px) {
+  .modal-content {
+    width: 90%;
+  }
+}
+
+/* Estilo del título */
+#login-title {
+  font-size: 2em;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+#register-title {
+  font-size: 2em;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.toggle-password {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  margin-left: 5px;
+  margin-top: -10px;
+  margin-bottom: 10px;
+  color: #007bff;
+  font-size: 10px;
+  text-align: start;
+}
+
+
+.error-message {
+  color: red;
+  font-size: 13px;
+  margin-top: -5px;
+  margin-bottom: 15px;
+}
+
+.link-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 20px;
+
+}
+
+.message-forms {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: gray;
+  margin-left: 10px;
+  font-size: 14px;
+  transition: color 0.3s;
+}
+
+#showLogin {
+  margin-top: 20px;
+}
+
+.message-forms:hover {
+  text-decoration: underline;
+  color: #007bff;
+}

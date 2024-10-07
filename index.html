@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Desarrollo Social</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" href="./css/styles.css">
+  <link rel="stylesheet" href="./css/navbar.css">
+  <link rel="stylesheet" href="./css/auth.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+
+<body>
+  <header>
+    <nav class="navbar">
+      <div class="container">
+        <div class="navbar-header">
+          <button class="navbar-toggler" data-toggle="open-navbar1">
+            <span></span>
+            <span></span>
+            <span></span>
+          </button>
+          <a href="#">
+            <div class="logo">
+              <img src="./assets/logo-ministerio-desarrollo-social.png" alt="Logo Gobierno Argentina">
+            </div>
+          </a>
+        </div>
+        <div class="navbar-menu" id="open-navbar1">
+          <ul class="navbar-nav">
+            <li><a href="./index.html">Home</a></li>
+
+            <!-- Enlace Configuración: Solo visible para Admin -->
+            <li class="navbar-dropdown admin-only" style="display: none;">
+              <a href="#" class="dropdown-toggler" data-dropdown="my-dropdown-id">
+                Configuración <i class="fa fa-angle-down"></i>
+              </a>
+              <ul class="dropdown" id="my-dropdown-id">
+                <li><a href="./pages/users.html">Usuarios</a></li>
+                <li class="separator"></li>
+              </ul>
+            </li>
+
+            <!-- Enlace Perfil: Visible para User y Admin -->
+            <li class="authenticated profile-link" style="display: none;"><a href="./pages/profile.html">Perfil</a></li>
+
+            <li>
+              <button class="btn-signin" id="loginBtn">Iniciar sesión</button>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <div class="cotenedor-principal">
+      <section class="seccion-tarjetas">
+        <div class="contenedor-tarjetas">
+          <div class="tarjeta">
+            <h2>DIRECCION DE POLITICAS ALIMENTARIAS</h2>
+            <a href="#" class="boton" data-page="politicas-alimentarias">Saber más</a>
+          </div>
+
+          <div class="tarjeta">
+            <h2>DIRECCION DE ECONOMIA SOCIAL Y DESARROLLO LOCAL</h2>
+            <a href="#" class="boton" data-page="economia-social">Saber más</a>
+          </div>
+
+          <div class="tarjeta">
+            <h2>SUBDIRECCION DE MICROCREDITO</h2>
+            <a href="#" class="boton" data-page="subdireccion-microcreditos">Saber más</a>
+          </div>
+
+          <div class="tarjeta">
+            <h2>DIRECCION DE ARTICULACION TERRITORIAL</h2>
+            <a href="#" class="boton" data-page="articulacion-territorial">Saber más</a>
+          </div>
+
+          <div class="tarjeta tarjeta-grande">
+            <h2>UNIDAD DE GESTION DE DOCUMENTOS</h2>
+            <a href="#" class="boton" data-page="gestion-documentos">Saber más</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="seccion-botones">
+        <div class="contenedor-botones">
+          <button class="btn" data-page="capacitaciones">Capacitaciones</button>
+          <button class="btn" data-page="eventos">Eventos</button>
+          <button class="btn" data-page="bibliografia">Bibliografía</button>
+          <button class="btn" data-page="protocolos-intervencion">Protocolos de Intervención</button>
+          <button class="btn" data-page="informacion-general">Información general</button>
+          <button class="btn" data-page="oferta-ministerial">Oferta Ministerial</button>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-contenido">
+      <div class="footer-contacto">
+        <h3>Contacto</h3>
+        <p><i class="fas fa-envelope"></i> contacto@gov.ar</p>
+        <p><i class="fas fa-phone"></i>0381 - 4844000</p>
+        <p><i class="fas fa-map-marker-alt"></i> 25 de Mayo 90 - S. M. de Tucumán</p>
+      </div>
+      <div class="footer-redes">
+        <a href="https://www.instagram.com" target="_blank" class="red-social instagram">
+          <i class="fab fa-instagram"></i>
+        </a>
+        <a href="https://www.facebook.com" target="_blank" class="red-social facebook">
+          <i class="fab fa-facebook"></i>
+        </a>
+        <a href="https://www.twitter.com" target="_blank" class="red-social twitter">
+          <i class="fab fa-twitter"></i>
+        </a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Modal login -->
+  <div id="loginModal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h2 id="login-title">Iniciar Sesión</h2>
+      <form id="loginForm">
+        <label for="email">Email</label>
+        <input type="email" id="login-email" name="email" required>
+
+        <label for="password">Contraseña</label>
+        <input type="password" id="login-password" required>
+        <button type="button" class="toggle-password" id="toggle-password">Ver contraseña</button>
+
+        <p id="error-message" class="error-message"></p>
+
+        <button type="submit">Iniciar Sesión</button>
+      </form>
+      <div class="link-container">
+        <a href="./pages/forgot-password.html" id="forgotPassword">¿Olvidaste tu contraseña?</a>
+        <button id="showRegister" class="message-forms">¿No tienes una cuenta?</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal registro -->
+  <div id="registerModal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h2 id="register-title">Registrarse</h2>
+      <form id="registerForm">
+        <label for="username">Nombre de Usuario</label>
+        <input type="text" id="register-username" name="username" required>
+
+        <label for="email">Email</label>
+        <input type="email" id="register-email" name="email" required>
+
+        <label for="password">Contraseña</label>
+        <input type="password" id="register-password" name="password" required>
+        <button type="button" class="toggle-password" id="toggle-register-password">Ver contraseña</button>
+
+        <label for="first-name">Nombre</label>
+        <input type="text" id="register-first-name" name="first_name" required>
+
+        <label for="last-name">Apellido</label>
+        <input type="text" id="register-last-name" name="last_name" required>
+
+        <label for="phone">Teléfono</label>
+        <input type="tel" id="register-phone" name="phone" required>
+
+        <label for="address">Dirección</label>
+        <input type="text" id="register-address" name="address" required>
+
+        <p id="error-message-register" class="error-message"></p>
+
+        <button type="submit">Registrarse</button>
+      </form>
+      <button id="showLogin" class="message-forms">¿Ya tienes una cuenta?</button>
+    </div>
+  </div>
+
+  <script src="./js/main.js"></script>
+  <script src="./js/auth.js"></script>
+</body>
+
+</html>

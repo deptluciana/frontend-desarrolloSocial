@@ -1,0 +1,129 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background-color: #f4f4f4;
+  color: #333;
+}
+
+/* Contenedor del perfil */
+.profile-container {
+  max-width: 1100px;
+  margin: 2rem auto;
+  background-color: white;
+  padding: 2rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+}
+
+.profile-container h1 {
+  background-color: rgb(0, 104, 189);
+  padding: 20px;
+  text-align: center;
+  margin-bottom: 2rem;
+  font-size: 2rem;
+  color: #ebebeb;
+}
+
+.profile-container h1 i {
+  color: #f9f9f9; /* Cambia el color del ícono si lo deseas */
+}
+
+.profile-card {
+  background-color: #ededed;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(136, 134, 134, 0.1);
+}
+
+.profile-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); 
+  gap: 1.7rem;
+}
+
+
+@media (max-width: 768px) {
+  .profile-grid {
+    grid-template-columns: 1fr; 
+  }
+}
+
+.profile-group {
+  margin-bottom: 0; 
+}
+
+.profile-group label {
+  display: block;
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+  color: #1c1c1c;
+}
+
+.input-container {
+  display: flex;
+  align-items: center;
+}
+
+.disabled-input {
+  cursor: not-allowed; 
+}
+
+.profile-group input {
+  width: 100%;
+  padding: 0.8rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+  color: #333;
+  margin-right: 0.5rem;
+}
+
+.profile-group input:disabled {
+  background-color: #f9f9f9;
+}
+
+.edit-icon {
+  cursor: pointer;
+  color: #007bff;
+  font-size: 1.0rem;
+  transition: color 0.3s ease;
+}
+
+.edit-icon:hover {
+  color: #0056b3;
+}
+
+.logout-container {
+  display: flex;
+  justify-content: flex-start;
+  margin-top: 20px;
+}
+
+.btn-logout {
+  background-color: #dc3545; 
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  font-size: 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.btn-logout:hover {
+  background-color: #c82333; 
+}
+
+@media (max-width: 768px) {
+  .btn-logout {
+    margin-top: 20px;
+    width: 100%;
+    font-size: 14px;
+    padding: 10px;
+  }
+}

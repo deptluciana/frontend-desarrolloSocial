@@ -1,0 +1,313 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    height: 100vh;
+}
+
+.containerPrincipal {
+    width: 90%;
+    margin: auto;
+    margin-top: 10px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background-color: white;
+    position: relative;
+}
+
+h1 {
+    text-align: center;
+    color: #333;
+}
+
+/* Estilo de búsqueda */
+.search-container {
+    display: flex;
+    justify-content: flex-start;
+    margin-top: 20px;
+    margin-bottom: -10px;
+    margin-left: 2px;
+    align-items: center;
+    gap: 10px;
+}
+
+.search-container label {
+    margin-right: 5px;
+    align-self: center;
+}
+
+.search-container select,
+.search-container input {
+    padding: 5px;
+    font-size: 14px;
+}
+
+@media (max-width: 768px) {
+
+    /* Para pantallas pequeñas: El input y el select estarán apilados y más pequeños */
+    .search-container {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .search-container select,
+    .search-container input {
+        width: 100%;
+        font-size: 12px;
+    }
+
+    .search-container input {
+        margin-bottom: 10px;
+    }
+}
+
+/* Botón agregar */
+.btn-primary {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-size: 16px;
+    margin-top: 20px;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+}
+
+@media (max-width: 768px) {
+    .btn-primary {
+        display: block;
+        margin: 20px auto;
+        width: 100%;
+        max-width: 200px;
+    }
+}
+
+/* Botón Editar */
+.btn-secondary {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: background-color 0.3s ease;
+    margin-right: 5px;
+}
+
+.btn-secondary:hover {
+    background-color: #0056b3;
+}
+
+/* Botón Eliminar */
+.btn-danger {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: background-color 0.3s ease;
+}
+
+.btn-danger:hover {
+    background-color: #c82333;
+}
+
+/* Estilo por defecto: botones alineados en la misma fila */
+td>div {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+/* Estilos responsivos para pantallas pequeñas */
+@media (max-width: 768px) {
+    td>div {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .btn-secondary,
+    .btn-danger {
+        margin-right: 0;
+        margin-bottom: 10px;
+        width: 100%;
+        max-width: 120px;
+    }
+}
+
+@media (max-width: 480px) {
+
+    .btn-secondary,
+    .btn-danger {
+        padding: 6px 12px;
+        font-size: 12px;
+        max-width: 100px;
+    }
+}
+
+.table-responsive {
+    flex-grow: 1;
+}
+
+#usersTableContainer {
+    margin-top: 20px;
+    max-height: 400px;
+    overflow-y: auto;
+    overflow-x: auto;
+    border: 1px solid #ddd;
+    position: relative;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+th,
+td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+th {
+    background-color: #007bff;
+    color: white;
+    position: sticky;
+    top: -1px;
+    z-index: 50;
+}
+
+tr:hover {
+    background-color: #f1f1f1;
+}
+
+/* Modal */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    width: 80%;
+    max-width: 600px;
+    transition: all 0.3s ease-in-out;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+#title {
+    font-size: 2em;
+    margin-bottom: 25px;
+    text-align: center;
+}
+
+.modal-content label {
+    font-size: 14px;
+    margin-bottom: 5px;
+    text-align: left;
+}
+
+.modal-content input,
+.modal-content select {
+    padding: 10px;
+    margin-bottom: 12px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+button[type="submit"] {
+    padding: 10px;
+    font-size: 16px;
+    background-color: rgb(0, 119, 255);
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    margin-top: 20px;
+    transition: background-color 0.3s ease;
+}
+
+button[type="submit"]:hover {
+    background-color: #0077cc;
+}
+
+.close {
+    position: absolute;
+    top: 5px;
+    right: 15px;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.toggle-password {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    margin-left: 5px;
+    margin-top: -10px;
+    margin-bottom: 10px;
+    color: #007bff;
+    font-size: 10px;
+    text-align: start;
+}
+
+
+.overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+}
+
+/* Media Queries para pantallas más pequeñas */
+@media (max-width: 768px) {
+    .btn-primary {
+        width: 100%;
+        margin-bottom: 20px;
+    }
+
+    #usersTableContainer {
+        max-height: 600px;
+        overflow-y: auto;
+        overflow-x: scroll;
+    }
+}
+
+@media (max-width: 480px) {
+    #usersTableContainer {
+        max-height: 430px;
+        overflow-y: auto;
+        overflow-x: scroll;
+    }
+}
