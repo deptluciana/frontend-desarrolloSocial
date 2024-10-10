@@ -1,3 +1,6 @@
+const apiUrlFile = 'https://backend-desarrollosocial-production-4486.up.railway.app/api/files';
+const apiUrlAuth = 'https://backend-desarrollosocial-production-4486.up.railway.app/api/auth';
+
 // Variables globales
 let isAuthenticated = false;
 let userRole = null;
@@ -45,7 +48,7 @@ uploadForm.addEventListener('submit', async (e) => {
     formData.append('section', section); // Enviar la sección al backend
 
     try {
-        const response = await fetch('http://localhost:5000/api/files/upload', {
+        const response = await fetch(`${apiUrlFile}/upload`, {
             method: 'POST',
             body: formData,
             credentials: 'include',
@@ -84,7 +87,7 @@ uploadForm.addEventListener('submit', async (e) => {
 // Función para cargar y mostrar los archivos subidos
 async function loadFiles() {
     try {
-        const response = await fetch(`http://localhost:5000/api/files/${section}`, {
+        const response = await fetch(`${apiUrlFile}/${section}`, {
             method: 'GET',
             credentials: 'include',
         });
@@ -102,7 +105,7 @@ async function loadFiles() {
                 const li = document.createElement('li');
 
                 const link = document.createElement('a');
-                link.href = `http://localhost:5000${file.fileUrl}`;
+                link.href = `https://backend-desarrollosocial-production-4486.up.railway.app${file.fileUrl}`;
                 link.target = '_blank';
                 link.textContent = file.filename;
 
@@ -156,7 +159,7 @@ async function loadFiles() {
 // Función para eliminar un archivo
 async function deleteFile(id) {
     try {
-        const response = await fetch(`http://localhost:5000/api/files/delete/${id}`, {
+        const response = await fetch(`${apiUrlFile}/delete/${id}`, {
             method: 'DELETE',
             credentials: 'include',
         });
@@ -243,7 +246,7 @@ function handleAuthenticated(role) {
 // Función para comprobar si la sesión está activa y obtener el rol
 async function checkAuth() {
     try {
-        const response = await fetch('http://localhost:5000/api/auth/check', {
+        const response = await fetch(`${apiUrlAuth}/check`, {
             method: 'GET',
             credentials: 'include'
         });

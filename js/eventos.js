@@ -1,3 +1,6 @@
+const apiUrlEventos = 'https://backend-desarrollosocial-production-4486.up.railway.app/api/eventos';
+const apiUrlAuth = 'https://backend-desarrollosocial-production-4486.up.railway.app/api/auth';
+
 // Variables globales
 let isAuthenticated = false;
 let userRole = null;
@@ -42,7 +45,7 @@ async function loadEventPanels() {
     principalPanel.innerHTML = '<p>Cargando información...</p>';
 
     try {
-        const response = await fetch('http://localhost:5000/api/eventos/', {
+        const response = await fetch(`${apiUrlEventos}`, {
             method: 'GET',
             credentials: 'include',
         });
@@ -149,7 +152,7 @@ editForm.addEventListener('submit', async (e) => {
     }
 
     try {
-        const response = await fetch(`http://localhost:5000/api/eventos/${id}`, {
+        const response = await fetch(`${apiUrlEventos}/${id}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -211,7 +214,7 @@ function confirmDeletePanel(id) {
 // Función para eliminar un panel de información
 async function deletePanel(id) {
     try {
-        const response = await fetch(`http://localhost:5000/api/eventos/${id}`, {
+        const response = await fetch(`${apiUrlEventos}/${id}`, {
             method: 'DELETE',
             credentials: 'include',
         });
@@ -291,7 +294,7 @@ addForm.addEventListener('submit', async (e) => {
     }
 
     try {
-        const response = await fetch(`http://localhost:5000/api/eventos`, {
+        const response = await fetch(`${apiUrlEventos}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -336,7 +339,7 @@ addForm.addEventListener('submit', async (e) => {
 // Función para comprobar si la sesión está activa y obtener el rol
 async function checkAuth() {
     try {
-        const response = await fetch('http://localhost:5000/api/auth/check', {
+        const response = await fetch(`${apiUrlAuth}/check`, {
             method: 'GET',
             credentials: 'include'
         });
@@ -409,5 +412,6 @@ function handleUnauthenticated() {
     if (agregarPanelBtn) {
         agregarPanelBtn.style.display = 'none';
     }
+    window.location.href = '../index.html';
 }
 document.addEventListener('DOMContentLoaded', initApp);
