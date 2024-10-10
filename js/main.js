@@ -27,7 +27,7 @@ let userRole = null;
 // Función para comprobar si la sesión está activa y manejar la visibilidad de los elementos
 async function checkAuth() {
   try {
-    const response = await fetch('http://localhost:5000/api/auth/check', {
+    const response = await fetch('https://backend-desarrollosocial-production-4486.up.railway.app/api/auth/check', {
       method: 'GET',
       credentials: 'include'
     });
@@ -185,7 +185,7 @@ document.getElementById('loginForm').addEventListener('submit', async function (
   const password = document.getElementById('login-password').value;
 
   try {
-    const response = await fetch('http://localhost:5000/api/auth/login', {
+    const response = await fetch('https://backend-desarrollosocial-production-4486.up.railway.app/api/auth/login', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'

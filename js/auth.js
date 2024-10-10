@@ -1,6 +1,6 @@
 // URLs de la API
-const apiUrlUsers = 'http://localhost:5000/api/users';
-const apiUrlAuth = 'http://localhost:5000/api/auth';
+const apiUrlUsers = 'https://backend-desarrollosocial-production-4486.up.railway.app/api/users';
+const apiUrlAuth = 'https://backend-desarrollosocial-production-4486.up.railway.app/api/auth';
 
 // Elementos del DOM
 const loginBtn = document.getElementById('loginBtn');
