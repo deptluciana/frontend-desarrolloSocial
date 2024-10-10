@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Protocolos de Intervención</title>
+    <title>Oferta Ministerial</title>
     <!-- Fuentes y Estilos -->
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../css/pestañas-tarjetas.css">
@@ -16,9 +16,8 @@
 
 <body>
     <header>
-        <h1>Protocolos de Intervención</h1>
+        <h1>Oferta Ministerial</h1>
     </header>
-
     <main>
         <div class="contenedor-info">
             <!-- Panel Principal: Información -->
@@ -26,11 +25,11 @@
                 <!-- Aquí se dibujarían todos mis paneles que tenga en mi base de datos -->
             </div>
             <!-- Panel Principal 2: Subida de Archivos -->
-            <div class="panel upload-panel" style="display: none;">
+            <div class="panel upload-panel">
                 <section class="upload-section">
                     <h2>Archivos</h2>
                     <!-- Formulario de Subida de Archivos (Solo para Admin) -->
-                    <form id="uploadForm" class="admin-only" enctype="multipart/form-data" data-section="protocolos-intervencion">
+                    <form id="uploadForm" class="admin-only" enctype="multipart/form-data" data-section="oferta-ministerial">
                         <div class="file-input-container">
                             <label for="fileInput" class="file-label">
                                 <i class="fas fa-upload"></i> Seleccionar
@@ -52,6 +51,9 @@
 
         <!-- Botones Existentes -->
         <div class="contenedor-botones">
+            <button id="protocolos-intervencion" class="small-button" style="display: none;">
+                <i class="fas fa-file-alt"></i> Protocolos de Intervención
+            </button>
             <!-- Botón para agregar un nuevo panel (Solo para Admin) -->
             <button id="agregar-panel" class="admin-only small-button">
                 <i class="fas fa-plus"></i> Agregar Panel
@@ -64,7 +66,7 @@
                 <span class="close-add-modal">&times;</span>
                 <h2 class="title-modales">Agregar Nuevo Panel</h2>
                 <form id="addForm">
-                    <input type="hidden" id="addType" value="protocolos-intervencion" />
+                    <input type="hidden" id="addType" value="oferta-ministerial" />
                     <input type="text" id="addTitleInput" placeholder="Título" required />
                     <textarea id="addDescriptionInput" placeholder="Descripción" required></textarea>
                     <button type="submit" class="submit-btn">Agregar Panel</button>
@@ -92,6 +94,7 @@
         <a href="../index.html">Volver a la página principal</a>
     </footer>
 
+    <!-- Archivo JavaScript -->
     <script src="../js/config/file.js"></script>
 </body>
 

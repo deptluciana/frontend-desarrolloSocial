@@ -1,64 +1,100 @@
+// URLs de la API
+const apiUrlUsers = 'http://localhost:5000/api/users';
+const apiUrlAuth = 'http://localhost:5000/api/auth';
+
 // Elementos del DOM
 const loginBtn = document.getElementById('loginBtn');
 const loginModal = document.getElementById('loginModal');
 const registerModal = document.getElementById('registerModal');
-const closeModalButtons = document.querySelectorAll('.close');
+const closeModalButtons = document.querySelectorAll('.modal .close');
 const showRegister = document.getElementById('showRegister');
 const showLogin = document.getElementById('showLogin');
+const mainButtons = document.querySelectorAll('.btn, .tarjeta .boton'); // Botones en la página principal
 
-// Mostrar el modal de inicio de sesión
-loginBtn.onclick = function () {
-  loginModal.style.display = 'flex';
+// Función para abrir un modal
+function openModal(modal) {
+  modal.classList.add('show');
+  document.body.style.overflow = 'hidden'; // Prevenir scroll del body
 }
 
-// Cerrar modales
-closeModalButtons.forEach(button => {
-  button.onclick = function () {
-    loginModal.style.display = 'none';
-    registerModal.style.display = 'none';
-  };
+// Función para cerrar un modal
+function closeModalFunction(modal) {
+  modal.classList.remove('show');
+  document.body.style.overflow = 'auto'; // Permitir scroll del body
+}
+
+// Mostrar el modal de inicio de sesión al hacer clic en "Iniciar sesión"
+loginBtn.addEventListener('click', () => {
+  openModal(loginModal);
 });
 
-// Cerrar modal al hacer clic fuera del contenido
-window.onclick = function (event) {
-  if (event.target === loginModal || event.target === registerModal) {
-    loginModal.style.display = 'none';
-    registerModal.style.display = 'none';
+// Cerrar modales al hacer clic en los botones de cerrar ("×")
+closeModalButtons.forEach(button => {
+  button.addEventListener('click', () => {
+    closeModalFunction(loginModal);
+    closeModalFunction(registerModal);
+  });
+});
+
+// Cerrar modales al hacer clic fuera del contenido del modal
+window.addEventListener('click', (event) => {
+  if (event.target === loginModal) {
+    closeModalFunction(loginModal);
+  } else if (event.target === registerModal) {
+    closeModalFunction(registerModal);
   }
-};
+});
 
-// Alternar entre modales
-showRegister.onclick = function (e) {
+// Alternar entre modales de login y registro
+showRegister.addEventListener('click', (e) => {
   e.preventDefault();
-  loginModal.style.display = 'none';
-  registerModal.style.display = 'flex';
-}
+  closeModalFunction(loginModal);
+  openModal(registerModal);
+});
 
-showLogin.onclick = function (e) {
+showLogin.addEventListener('click', (e) => {
   e.preventDefault();
-  registerModal.style.display = 'none';
-  loginModal.style.display = 'flex';
+  closeModalFunction(registerModal);
+  openModal(loginModal);
+});
+
+// Añadir eventos a los botones de la página principal para abrir el modal de login
+mainButtons.forEach(button => {
+  button.addEventListener('click', () => {
+    openModal(loginModal);
+  });
+});
+
+// Función para mostrar/ocultar la contraseña
+function togglePasswordVisibility(toggleBtnId, passwordFieldId) {
+  const toggleBtn = document.getElementById(toggleBtnId);
+  const passwordField = document.getElementById(passwordFieldId);
+
+  if (toggleBtn && passwordField) {
+    toggleBtn.addEventListener('click', function () {
+      const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
+      passwordField.setAttribute('type', type);
+      this.textContent = type === 'password' ? 'Ver contraseña' : 'Ocultar';
+    });
+  }
 }
 
 // Mostrar/ocultar contraseña en el login
-document.getElementById('toggle-password').addEventListener('click', function () {
-  const passwordField = document.getElementById('login-password');
-  const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
-  passwordField.setAttribute('type', type);
-  this.textContent = type === 'password' ? 'Ver contraseña' : 'Ocultar';
-});
+togglePasswordVisibility('toggle-password', 'login-password');
 
-// Lógica para el inicio de sesión
-document.getElementById('loginForm').addEventListener('submit', async (e) => {
+// Mostrar/ocultar contraseña en el registro
+togglePasswordVisibility('toggle-register-password', 'register-password');
+
+// Función para manejar el inicio de sesión
+async function handleLogin(e) {
   e.preventDefault();
 
-  const email = document.getElementById('login-email').value;
+  const email = document.getElementById('login-email').value.trim();
   const password = document.getElementById('login-password').value;
   const errorMessage = document.getElementById('error-message');
 
   try {
-
-    const response = await fetch('http://localhost:5000/api/auth/login', {
+    const response = await fetch(`${apiUrlAuth}/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -80,36 +116,29 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
         window.location.href = '/frontend/index.html';
       });
     } else {
-      errorMessage.textContent = data.message;
+      errorMessage.textContent = data.message || 'Error en el inicio de sesión.';
     }
   } catch (error) {
     errorMessage.textContent = 'Error en el inicio de sesión.';
+    console.error('Error en el inicio de sesión:', error);
   }
-});
+}
 
-// Mostrar/ocultar contraseña en el registro
-document.getElementById('toggle-register-password').addEventListener('click', function () {
-  const passwordField = document.getElementById('register-password');
-  const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
-  passwordField.setAttribute('type', type);
-  this.textContent = type === 'password' ? 'Ver contraseña' : 'Ocultar';
-});
-
-// Lógica para el registro de usuario
-document.getElementById('registerForm').addEventListener('submit', async (e) => {
+// Función para manejar el registro de usuario
+async function handleRegister(e) {
   e.preventDefault();
 
-  const username = document.getElementById('register-username').value;
-  const email = document.getElementById('register-email').value;
+  const username = document.getElementById('register-username').value.trim();
+  const email = document.getElementById('register-email').value.trim();
   const password = document.getElementById('register-password').value;
-  const first_name = document.getElementById('register-first-name').value; // Nombre
-  const last_name = document.getElementById('register-last-name').value; // Apellido
-  const phone = document.getElementById('register-phone').value;
-  const address = document.getElementById('register-address').value;
+  const first_name = document.getElementById('register-first-name').value.trim();
+  const last_name = document.getElementById('register-last-name').value.trim();
+  const phone = document.getElementById('register-phone').value.trim();
+  const address = document.getElementById('register-address').value.trim();
   const errorMessage = document.getElementById('error-message-register');
 
   try {
-    const response = await fetch('http://localhost:5000/api/auth/register', {
+    const response = await fetch(`${apiUrlAuth}/register`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -136,15 +165,26 @@ document.getElementById('registerForm').addEventListener('submit', async (e) => 
         timer: 2000,
         showConfirmButton: true
       }).then(() => {
-        // Opcional: cerrar el modal de registro y abrir el de login
-        registerModal.style.display = 'none';
-        loginModal.style.display = 'flex';
+        closeModalFunction(registerModal);
+        openModal(loginModal);
       });
     } else {
-      errorMessage.textContent = data.message;
+      errorMessage.textContent = data.message || 'Error en el registro.';
     }
   } catch (error) {
     errorMessage.textContent = 'Error en el registro.';
+    console.error('Error en el registro:', error);
+  }
+}
+
+// Añadir eventos a los formularios
+document.getElementById('loginForm').addEventListener('submit', handleLogin);
+document.getElementById('registerForm').addEventListener('submit', handleRegister);
+
+// Cerrar modales al presionar la tecla 'Esc'
+document.addEventListener('keydown', (event) => {
+  if (event.key === 'Escape') {
+    closeModalFunction(loginModal);
+    closeModalFunction(registerModal);
   }
 });
-

@@ -2,55 +2,31 @@
 const apiUrlUsers = 'http://localhost:5000/api/users';
 const apiUrlAuth = 'http://localhost:5000/api/auth';
 
+const navIcon = document.getElementById("menubar");
+const menuResponsive = document.getElementById("menulist");
+const nav = document.getElementById("navID");
+const menuIcon = document.getElementById("menuIcon");
+const closeIcon = document.getElementById("closeIcon");
+
 // Variables globales para autenticación
 let isAuthenticated = false;
 let userRole = null;
 
-// Barra de Navegación: Manejo de Dropdowns
-function initDropdowns() {
-  let dropdowns = document.querySelectorAll('.navbar .dropdown-toggler');
-  let dropdownIsOpen = false;
+// barra de navegacion
+navIcon.addEventListener("click", function (event) {
+    event.stopPropagation();
+    menuResponsive.classList.toggle("ullistshow");
+    navIcon.classList.toggle("open");
+});
 
-  if (dropdowns.length) {
-    dropdowns.forEach((dropdown) => {
-      dropdown.addEventListener('click', (event) => {
-        let target = document.querySelector(`#${event.target.dataset.dropdown}`);
-        if (target) {
-          if (target.classList.contains('show')) {
-            target.classList.remove('show');
-            dropdownIsOpen = false;
-          } else {
-            target.classList.add('show');
-            dropdownIsOpen = true;
-          }
-        }
-      });
-    });
-  }
+document.addEventListener("click", function (event) {
+    const target = event.target;
 
-  window.addEventListener('mouseup', (event) => {
-    if (dropdownIsOpen) {
-      dropdowns.forEach((dropdownButton) => {
-        let dropdown = document.querySelector(`#${dropdownButton.dataset.dropdown}`);
-        let targetIsDropdown = dropdown === event.target;
-
-        if (dropdownButton === event.target) return;
-
-        if (!targetIsDropdown && !dropdown.contains(event.target)) {
-          dropdown.classList.remove('show');
-        }
-      });
+    if (!nav.contains(target)) {
+        menuResponsive.classList.remove("ullistshow");
+        navIcon.classList.remove("open");
     }
-  });
-}
-
-// Manejo de pantallas pequeñas (Responsive Navbar)
-function handleSmallScreens() {
-  document.querySelector('.navbar-toggler').addEventListener('click', () => {
-    let navbarMenu = document.querySelector('.navbar-menu');
-    navbarMenu.classList.toggle('active');
-  });
-}
+});
 
 // Manejo de autenticación
 async function checkAuth() {
@@ -215,8 +191,6 @@ async function fetchUserProfile() {
 
 // Inicialización
 function init() {
-  initDropdowns();
-  handleSmallScreens();
   checkAuth();
   fetchUserProfile();
   enableProfileEdit();

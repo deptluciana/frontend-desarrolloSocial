@@ -1,57 +1,24 @@
 // barra de navegacion
-let dropdowns = document.querySelectorAll('.navbar .dropdown-toggler');
-let dropdownIsOpen = false;
+const navIcon = document.getElementById("menubar");
+const menuResponsive = document.getElementById("menulist");
+const nav = document.getElementById("navID");
+const menuIcon = document.getElementById("menuIcon");
+const closeIcon = document.getElementById("closeIcon");
 
-if (dropdowns.length) {
-  dropdowns.forEach((dropdown) => {
-    dropdown.addEventListener('click', (event) => {
-      let target = document.querySelector(`#${dropdown.dataset.dropdown}`);
-
-      if (target) {
-        if (target.classList.contains('show')) {
-          target.classList.remove('show');
-          dropdownIsOpen = false;
-        } else {
-          target.classList.add('show');
-          dropdownIsOpen = true;
-        }
-      }
-    });
-  });
-}
-
-window.addEventListener('mouseup', (event) => {
-  if (dropdownIsOpen) {
-    dropdowns.forEach((dropdownButton) => {
-      let dropdown = document.querySelector(`#${dropdownButton.dataset.dropdown}`);
-      let targetIsDropdown = dropdown.contains(event.target);
-
-      if (dropdownButton.contains(event.target)) {
-        return;
-      }
-
-      if (!targetIsDropdown) {
-        dropdown.classList.remove('show');
-        dropdownIsOpen = false;
-      }
-    });
-  }
+navIcon.addEventListener("click", function (event) {
+  event.stopPropagation();
+  menuResponsive.classList.toggle("ullistshow");
+  navIcon.classList.toggle("open");
 });
 
-function handleSmallScreens() {
-  const toggler = document.querySelector('.navbar-toggler');
-  if (toggler) {
-    toggler.addEventListener('click', () => {
-      let navbarMenu = document.querySelector('.navbar-menu');
+document.addEventListener("click", function (event) {
+  const target = event.target;
 
-      if (!navbarMenu.classList.contains('active')) {
-        navbarMenu.classList.add('active');
-      } else {
-        navbarMenu.classList.remove('active');
-      }
-    });
+  if (!nav.contains(target)) {
+    menuResponsive.classList.remove("ullistshow");
+    navIcon.classList.remove("open");
   }
-}
+});
 
 // Variables globales para almacenar el estado de autenticación y el rol del usuario
 let isAuthenticated = false;
@@ -62,7 +29,7 @@ async function checkAuth() {
   try {
     const response = await fetch('http://localhost:5000/api/auth/check', {
       method: 'GET',
-      credentials: 'include' // Asegura que las cookies se envíen con la solicitud
+      credentials: 'include'
     });
 
     if (response.ok) {
@@ -70,19 +37,15 @@ async function checkAuth() {
       if (data.authenticated) {
         // El usuario está autenticado
         isAuthenticated = true;
-        userRole = data.user.role; // Obtener el rol del usuario
+        userRole = data.user.role;
 
-        // Ocultar el botón de iniciar sesión
         document.querySelector('.btn-signin').style.display = 'none';
 
-        // Mostrar todos los elementos con la clase 'authenticated'
         document.querySelectorAll('.authenticated').forEach(el => {
           el.style.display = 'block';
         });
 
-        // Manejar visibilidad según el rol
-                if (userRole === 'admin') {
-          // Mostrar elementos exclusivos para admin
+        if (userRole === 'admin') {
           document.querySelectorAll('.admin-only').forEach(el => {
             el.style.display = 'block';
           });
@@ -93,17 +56,18 @@ async function checkAuth() {
           });
         }
 
+        // Aquí, aseguramos que se añadan los event listeners después de iniciar sesión
+        attachClickHandlers();
+
       } else {
         // El usuario no está autenticado
         handleUnauthenticated();
       }
     } else {
-      // Respuesta no OK, tratar como no autenticado
       handleUnauthenticated();
     }
   } catch (error) {
     console.error('Error al verificar autenticación:', error);
-    // Mostrar error con SweetAlert2
     Swal.fire({
       icon: 'error',
       title: 'Error',
@@ -117,18 +81,16 @@ function handleUnauthenticated() {
   isAuthenticated = false;
   userRole = null;
 
-  // Mostrar el botón de iniciar sesión
   document.querySelector('.btn-signin').style.display = 'block';
 
-  // Ocultar todos los elementos con la clase 'authenticated'
   document.querySelectorAll('.authenticated').forEach(el => {
     el.style.display = 'none';
   });
 
-  // Asegurarse de que los elementos 'admin-only' estén ocultos
   document.querySelectorAll('.admin-only').forEach(el => {
     el.style.display = 'none';
   });
+  
 }
 
 // Función para abrir el modal de inicio de sesión
@@ -164,19 +126,19 @@ function handleButtonClick(event) {
         window.location.href = 'pages/capacitaciones.html';
         break;
       case 'eventos':
-        window.location.href = './pages/eventos.html';
+        window.location.href = 'pages/eventos.html';
         break;
       case 'bibliografia':
-        window.location.href = './pages/bibliografia.html';
+        window.location.href = 'pages/bibliografia.html';
         break;
       case 'protocolos-intervencion':
         window.location.href = 'pages/protocolos-intervencion.html';
         break;
       case 'informacion-general':
-        window.location.href = './pages/informacion.html';
+        window.location.href = 'pages/informacion-general.html';
         break;
       case 'oferta-ministerial':
-        window.location.href = './pages/oferta.html';
+        window.location.href = 'pages/oferta-ministerial.html';
         break;
       case 'politicas-alimentarias':
         window.location.href = 'pages/politicas-alimentarias.html';
@@ -204,40 +166,54 @@ function handleButtonClick(event) {
   }
 }
 
-// Añadir eventos a los botones
-const buttons = document.querySelectorAll('.btn');
-buttons.forEach(button => {
-  button.addEventListener('click', handleButtonClick);
-});
+// Función para adjuntar los manejadores de clics a botones y tarjetas
+function attachClickHandlers() {
+  // Seleccionar todos los botones y tarjetas
+  const buttons = document.querySelectorAll('.btn, .tarjeta .boton');
 
-// También agregar eventos a las tarjetas
-const botonesTarjetas = document.querySelectorAll('.tarjeta .boton');
-botonesTarjetas.forEach(boton => {
-  boton.addEventListener('click', handleButtonClick);
-});
-
-// Función para cerrar modales al hacer clic en el botón de cerrar
-function setupModalClose() {
-  const closeButtons = document.querySelectorAll('.modal .close');
-  closeButtons.forEach(closeBtn => {
-    closeBtn.addEventListener('click', () => {
-      const modal = closeBtn.closest('.modal');
-      modal.style.display = 'none';
-    });
-  });
-
-  // Cerrar modal al hacer clic fuera del contenido del modal
-  window.addEventListener('click', (event) => {
-    const modals = document.querySelectorAll('.modal');
-    modals.forEach(modal => {
-      if (event.target == modal) {
-        modal.style.display = 'none';
-      }
-    });
+  // Añadir el evento de clic a cada botón y tarjeta
+  buttons.forEach(button => {
+    button.addEventListener('click', handleButtonClick);
   });
 }
 
-// Inicializar funciones
-setupModalClose();
+// Manejar el envío del formulario de inicio de sesión
+document.getElementById('loginForm').addEventListener('submit', async function (event) {
+  event.preventDefault(); // Evitar el comportamiento de envío por defecto
+
+  const email = document.getElementById('login-email').value;
+  const password = document.getElementById('login-password').value;
+
+  try {
+    const response = await fetch('http://localhost:5000/api/auth/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      credentials: 'include',
+      body: JSON.stringify({ email, password })
+    });
+
+    if (response.ok) {
+      // Cerrar el modal después de un inicio de sesión exitoso
+      const modal = document.getElementById('loginModal');
+      modal.style.display = 'none';
+
+      // Reiniciar el estado de autenticación
+      await checkAuth(); // Verificar la autenticación nuevamente
+    } else {
+      const errorData = await response.json();
+      document.getElementById('error-message').textContent = errorData.message;
+    }
+  } catch (error) {
+    console.error('Error al iniciar sesión:', error);
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: 'Hubo un problema al iniciar sesión. Por favor, inténtalo de nuevo más tarde.',
+    });
+  }
+});
+
+// Inicializar la verificación de autenticación al cargar la página
 checkAuth();
-handleSmallScreens();

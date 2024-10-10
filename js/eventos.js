@@ -1,261 +1,55 @@
 // Variables globales
 let isAuthenticated = false;
 let userRole = null;
-let currentInfoId = null;
-let currentInfoType = null;
+let currentEventoId = null;
 
-// Elementos del DOM para la gestión de archivos
-const uploadForm = document.getElementById('uploadForm');
-const fileList = document.getElementById('fileList');
-const fileInput = document.getElementById('fileInput');
-const fileNameSpan = document.getElementById('file-name');
-const uploadSection = document.querySelector('.upload-section');
-const section = uploadForm.getAttribute('data-section');
-
-// Elementos del DOM para la gestión de paneles de información
-const principalPanel = document.querySelector('.principal-panel'); // Contenedor principal para los paneles
+const principalPanel = document.querySelector('.eventos-contenedor'); // Contenedor principal para los paneles
 
 // Modal y elementos de edición de paneles
 const editModal = document.getElementById('editModal');
 const closeModalBtn = document.querySelector('.close-modal');
 const editForm = document.getElementById('editForm');
 const editIdInput = document.getElementById('editId');
-const editTypeInput = document.getElementById('editType');
 const editTitleInput = document.getElementById('editTitleInput');
+const editUbiInput = document.getElementById('editUbiInput');
+const editHorariosInput = document.getElementById('editHorariosInput');
 const editDescriptionInput = document.getElementById('editDescriptionInput');
 
 // Elementos del DOM para agregar nuevos paneles
-const agregarPanelBtn = document.getElementById('agregar-panel');
+const agregarEventoBtn = document.getElementById('addEventBtn');
 const addModal = document.getElementById('addModal');
 const closeAddModalBtn = document.querySelector('.close-add-modal');
 const addForm = document.getElementById('addForm');
 const addTitleInput = document.getElementById('addTitleInput');
+const addUbiInput = document.getElementById('addUbiInput');
+const addHorariosInput = document.getElementById('addHorariosInput');
 const addDescriptionInput = document.getElementById('addDescriptionInput');
-const addTypeInput = document.getElementById('addType'); // Valor predeterminado en HTML
 
 // Función de inicialización
 async function initApp() {
     await checkAuth(); // Comprobar autenticación
-    loadFiles(); // Cargar archivos subidos
-    loadInfoPanels(); // Cargar paneles de información
+    loadEventPanels(); // Cargar paneles de información
     attachAddPanelEvent(); // Asignar evento al botón de agregar panel
 }
 
 // -----------------------
-// Gestión de Archivos
+// Gestión de eventos de Información
 // -----------------------
-
-fileInput.addEventListener('change', () => {
-    if (fileInput.files.length > 0) {
-        fileNameSpan.textContent = fileInput.files[0].name;
-    } else {
-        fileNameSpan.textContent = 'Ningún archivo seleccionado';
-    }
-});
-
-// Manejar la subida de archivos
-uploadForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const file = fileInput.files[0];
-
-    if (!file) {
-        Swal.fire({
-            icon: 'warning',
-            title: 'Atención',
-            text: 'Por favor, selecciona un archivo para subir.',
-            confirmButtonText: 'Aceptar'
-        });
-        return;
-    }
-
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('section', section); // Enviar la sección al backend
-
-    try {
-        const response = await fetch('http://localhost:5000/api/files/upload', {
-            method: 'POST',
-            body: formData,
-            credentials: 'include',
-        });
-
-        if (response.ok) {
-            Swal.fire({
-                icon: 'success',
-                title: '¡Éxito!',
-                text: 'Archivo subido correctamente',
-                confirmButtonText: 'Aceptar'
-            });
-            uploadForm.reset();
-            fileNameSpan.textContent = 'Ningún archivo seleccionado';
-            loadFiles();
-        } else {
-            const errorData = await response.json();
-            await Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: `Error: ${errorData.message}`,
-                confirmButtonText: 'Aceptar'
-            });
-        }
-    } catch (error) {
-        console.error('Error al subir el archivo:', error);
-        await Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: 'Ocurrió un error al subir el archivo.',
-            confirmButtonText: 'Aceptar'
-        });
-    }
-});
-
-// Función para cargar y mostrar los archivos subidos
-async function loadFiles() {
-    try {
-        const response = await fetch(`http://localhost:5000/api/files/${section}`, {
-            method: 'GET',
-            credentials: 'include',
-        });
-
-        if (response.ok) {
-            const files = await response.json();
-            fileList.innerHTML = '';
-
-            if (files.length === 0) {
-                fileList.innerHTML = '<li>No hay archivos subidos.</li>';
-                return;
-            }
-
-            files.forEach(file => {
-                const li = document.createElement('li');
-
-                const link = document.createElement('a');
-                link.href = `http://localhost:5000${file.fileUrl}`;
-                link.target = '_blank';
-                link.textContent = file.filename;
-
-                // Crear un botón de eliminar
-                const deleteButton = document.createElement('button');
-                deleteButton.innerHTML = '<i class="fas fa-trash-alt"></i> Eliminar';
-                deleteButton.classList.add('delete-button');
-                deleteButton.onclick = () => {
-                    Swal.fire({
-                        title: '¿Estás seguro?',
-                        text: "¿Deseas eliminar este archivo?",
-                        icon: 'warning',
-                        showCancelButton: true,
-                        confirmButtonColor: '#d33',
-                        cancelButtonColor: '#3085d6',
-                        confirmButtonText: 'Sí, eliminar',
-                        cancelButtonText: 'Cancelar'
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            deleteFile(file.id);
-                        }
-                    });
-                };
-
-                li.appendChild(link);
-                if (userRole === 'admin') {
-                    li.appendChild(deleteButton);
-                }
-                fileList.appendChild(li);
-            });
-        } else {
-            const errorData = await response.json();
-            Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: `Error: ${errorData.message}`,
-                confirmButtonText: 'Aceptar'
-            });
-        }
-    } catch (error) {
-        console.error('Error al cargar los archivos:', error);
-        Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: 'Ocurrió un error al cargar los archivos.',
-            confirmButtonText: 'Aceptar'
-        });
-    }
-    // Después de cargar los archivos, configurar los botones de eliminar según el rol
-    adjustDeleteButtonsVisibility();
-}
-
-// Función para ajustar la visibilidad de los botones de eliminar según el rol
-function adjustDeleteButtonsVisibility() {
-    if (userRole !== 'admin') {
-        document.querySelectorAll('.delete-button').forEach(button => {
-            button.style.display = 'none';
-        });
-    } else {
-        document.querySelectorAll('.delete-button').forEach(button => {
-            button.style.display = 'inline-block';
-        });
-    }
-}
-
-// Función para eliminar un archivo
-async function deleteFile(id) {
-    try {
-        const response = await fetch(`http://localhost:5000/api/files/delete/${id}`, {
-            method: 'DELETE',
-            credentials: 'include',
-        });
-
-        if (response.ok) {
-            // Muestra la alerta de éxito antes de cargar los archivos
-            Swal.fire({
-                icon: 'success',
-                title: '¡Éxito!',
-                text: 'Archivo eliminado correctamente',
-                confirmButtonText: 'Aceptar'
-            }).then(() => {
-                loadFiles(); // Solo cargar archivos después de que se confirme la alerta
-            });
-        } else {
-            const errorData = await response.json();
-            Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: `Error: ${errorData.message}`,
-                confirmButtonText: 'Aceptar'
-            });
-        }
-    } catch (error) {
-        console.error('Error al eliminar el archivo:', error);
-        Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: 'Ocurrió un error al eliminar el archivo.',
-            confirmButtonText: 'Aceptar'
-        });
-    }
-}
-
-// -----------------------
-// Gestión de Paneles de Información
-// -----------------------
-
 // Función para cargar los paneles de información de la sección actual
-async function loadInfoPanels() {
-    // Obtener la sección actual desde el atributo data-section del formulario de subida
-    const section = uploadForm.getAttribute('data-section');
+async function loadEventPanels() {
 
     // Mostrar un mensaje de carga
     principalPanel.innerHTML = '<p>Cargando información...</p>';
 
     try {
-        // Realizar una solicitud GET al backend para obtener la información de la sección
-        const response = await fetch(`http://localhost:5000/api/info/${section}`, {
+        const response = await fetch('http://localhost:5000/api/eventos/', {
             method: 'GET',
             credentials: 'include',
         });
 
         if (response.ok) {
-            const infoList = await response.json();
-            renderInfoPanels(infoList);
+            const EventosList = await response.json();
+            renderPanels(EventosList);
         } else {
             const errorData = await response.json();
             principalPanel.innerHTML = `<p>Error: ${errorData.message}</p>`;
@@ -267,8 +61,8 @@ async function loadInfoPanels() {
 }
 
 // Función para renderizar los paneles de información en el DOM
-function renderInfoPanels(infoList) {
-    if (infoList.length === 0) {
+function renderPanels(EventosList) {
+    if (EventosList.length === 0) {
         principalPanel.innerHTML = '<p>No hay información para mostrar en esta sección.</p>';
         return;
     }
@@ -276,23 +70,26 @@ function renderInfoPanels(infoList) {
     // Limpiar el contenedor principal
     principalPanel.innerHTML = '';
 
-    infoList.forEach(info => {
+    EventosList.forEach(info => {
         const panel = document.createElement('div');
-        panel.classList.add('subpanel');
-        panel.setAttribute('data-info-type', info.section);
+        panel.classList.add('evento-tarjeta');
         panel.setAttribute('data-info-id', info.id);
 
         panel.innerHTML = `
-            <div class="subpanel-header">
-                <h2 class="subpanel-title">${info.title}</h2>
-                <div class="iconos-subpanel">
+                <div class="evento-icono">
+                        <i class="fas fa-calendar-check"></i>
+                 </div>
+                  <div class="iconos-subpanel">
                     <i class="fas fa-edit editar-subpanel" title="Editar"></i>
                     <i class="fas fa-trash-alt eliminar-subpanel" title="Eliminar"></i>
                 </div>
-            </div>
-            <div class="subpanel-content">
-                <p class="info-text">${info.description}</p>
-            </div>
+                <div class="evento-info">
+                        <h3>${info.title}</h3>
+                        <p><i class="fas fa-map-marker-alt"></i> ${info.ubicacion}</p>
+                        <p><i class="fas fa-calendar-alt"></i> ${info.horarios}<//p>
+                        <br/><br/>
+                        <p> ${info.description}</p>
+                    </div>
         `;
 
         // Agregar eventos para los iconos de editar y eliminar
@@ -315,11 +112,13 @@ function renderInfoPanels(infoList) {
     });
 }
 
+
 // Función para abrir el modal de edición de paneles
 function openEditModal(info) {
     editIdInput.value = info.id;
-    editTypeInput.value = info.section;
     editTitleInput.value = info.title;
+    editUbiInput.value = info.ubicacion;
+    editHorariosInput.value = info.horarios;
     editDescriptionInput.value = info.description;
     editModal.style.display = 'block';
 }
@@ -329,12 +128,14 @@ closeModalBtn.addEventListener('click', () => {
     editModal.style.display = 'none';
 });
 
+
 // Manejar el envío del formulario de edición de paneles
 editForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const id = editIdInput.value;
-    const section = editTypeInput.value;
     const title = editTitleInput.value.trim();
+    const ubicacion = editUbiInput.value.trim();
+    const horarios = editHorariosInput.value.trim(); 
     const description = editDescriptionInput.value.trim();
 
     if (!title || !description) {
@@ -348,12 +149,12 @@ editForm.addEventListener('submit', async (e) => {
     }
 
     try {
-        const response = await fetch(`http://localhost:5000/api/info/${id}`, {
+        const response = await fetch(`http://localhost:5000/api/eventos/${id}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ title, description }),
+            body: JSON.stringify({ title, ubicacion, horarios, description }),
             credentials: 'include',
         });
 
@@ -366,7 +167,7 @@ editForm.addEventListener('submit', async (e) => {
             }).then(() => {
                 editModal.style.display = 'none';
                 // Recargar los paneles de información para reflejar los cambios
-                loadInfoPanels();
+                loadEventPanels();
             });
         } else {
             const errorData = await response.json();
@@ -401,15 +202,16 @@ function confirmDeletePanel(id) {
         cancelButtonText: 'Cancelar'
     }).then((result) => {
         if (result.isConfirmed) {
-            deleteInfoPanel(id);
+            deletePanel(id);
         }
     });
 }
 
+
 // Función para eliminar un panel de información
-async function deleteInfoPanel(id) {
+async function deletePanel(id) {
     try {
-        const response = await fetch(`http://localhost:5000/api/info/${id}`, {
+        const response = await fetch(`http://localhost:5000/api/eventos/${id}`, {
             method: 'DELETE',
             credentials: 'include',
         });
@@ -422,7 +224,7 @@ async function deleteInfoPanel(id) {
                 confirmButtonText: 'Aceptar'
             }).then(() => {
                 // Recargar los paneles de información para reflejar los cambios
-                loadInfoPanels();
+                loadEventPanels();
             });
         } else {
             const errorData = await response.json();
@@ -444,17 +246,21 @@ async function deleteInfoPanel(id) {
     }
 }
 
+
 // Agregar Nuevos Paneles de Información
 
 // Asignar evento al botón de agregar panel
 function attachAddPanelEvent() {
-    if (agregarPanelBtn && userRole === 'admin') {
-        agregarPanelBtn.addEventListener('click', openAddModal);
+    if (agregarEventoBtn && userRole === 'admin') {
+        agregarEventoBtn.addEventListener('click', openAddModal);
     }
 }
 
 // Función para abrir el modal de agregar panel
 function openAddModal() {
+    addTitleInput.value = '';
+    addUbiInput.value = '';
+    addHorariosInput.value = '';
     addTitleInput.value = '';
     addDescriptionInput.value = '';
     addModal.style.display = 'block';
@@ -465,11 +271,13 @@ closeAddModalBtn.addEventListener('click', () => {
     addModal.style.display = 'none';
 });
 
+
 // Manejar el envío del formulario de agregar panel
 addForm.addEventListener('submit', async (e) => {
     e.preventDefault();
-    const section = addTypeInput.value; // 'microcreditos'
     const title = addTitleInput.value.trim();
+    const ubicacion = addUbiInput.value.trim();
+    const horarios = addHorariosInput.value.trim();
     const description = addDescriptionInput.value.trim();
 
     if (!title || !description) {
@@ -483,12 +291,12 @@ addForm.addEventListener('submit', async (e) => {
     }
 
     try {
-        const response = await fetch(`http://localhost:5000/api/info/`, {
+        const response = await fetch(`http://localhost:5000/api/eventos`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ title, description, section }),
+            body: JSON.stringify({ title, ubicacion, horarios,description  }),
             credentials: 'include',
         });
 
@@ -502,7 +310,7 @@ addForm.addEventListener('submit', async (e) => {
             }).then(() => {
                 addModal.style.display = 'none';
                 // Recargar los paneles de información para incluir el nuevo panel
-                loadInfoPanels();
+                loadEventPanels();
             });
         } else {
             const errorData = await response.json();
@@ -523,8 +331,6 @@ addForm.addEventListener('submit', async (e) => {
         });
     }
 });
-
-// Funciones de Autenticación y Manejo de Roles
 
 
 // Función para comprobar si la sesión está activa y obtener el rol
@@ -566,30 +372,13 @@ function handleAuthenticated(role) {
         document.body.classList.add('admin');
     }
 
-    // Mostrar el formulario de subida de archivos si es admin
-    if (uploadForm) {
-        if (userRole === 'admin') {
-            uploadForm.style.display = 'block';
-        } else {
-            uploadForm.style.display = 'none';
-        }
-    }
-
-    // Mostrar la sección de archivos subidos
-    if (fileList) {
-        document.getElementById('archivos-subidos').style.display = 'block';
-    }
-
-    // Ajustar la visibilidad de los botones de eliminar
-    adjustDeleteButtonsVisibility();
-
     // Mostrar el botón de agregar panel si es admin
       // Mostrar el botón de agregar panel si es admin
-      if (agregarPanelBtn) {
+      if (agregarEventoBtn) {
         if (userRole === 'admin') {
-            agregarPanelBtn.style.display = 'inline-block'; // Mostrar solo si es admin
+            agregarEventoBtn.style.display = 'inline-block'; // Mostrar solo si es admin
         } else {
-            agregarPanelBtn.style.display = 'none'; // Ocultar si no es admin
+            agregarEventoBtn.style.display = 'none'; // Ocultar si no es admin
         }
     }
 
@@ -602,10 +391,6 @@ function handleUnauthenticated() {
     isAuthenticated = false;
     userRole = null;
 
-    // Ocultar el formulario de subida de archivos
-    if (uploadForm) {
-        uploadForm.style.display = 'none';
-    }
 
     // Mostrar solo la sección de archivos subidos
     if (fileList) {
@@ -625,6 +410,4 @@ function handleUnauthenticated() {
         agregarPanelBtn.style.display = 'none';
     }
 }
-
-// Inicializar la aplicación al cargar el DOM
 document.addEventListener('DOMContentLoaded', initApp);

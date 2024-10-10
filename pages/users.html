@@ -13,48 +13,40 @@
 </head>
 
 <body>
-    <header>
-        <nav class="navbar">
-            <div class="container">
-                <div class="navbar-header">
-                    <button class="navbar-toggler" data-toggle="open-navbar1">
-                        <span></span>
-                        <span></span>
-                        <span></span>
-                    </button>
-                    <a href="#">
-                        <div class="logo">
-                            <img src="../assets/logo-ministerio-desarrollo-social.png" alt="Logo Gobierno Argentina">
-                        </div>
-                    </a>
-                </div>
-                <div class="navbar-menu" id="open-navbar1">
-                    <ul class="navbar-nav">
-                        <li><a href="../index.html">Home</a></li>
+    <header class="hContainer">
+        <nav id="navID">
+            <div class="navtittle">
+                <img class="imglogo" src="../assets/logo-gobierno-tucuman.png" alt="Logo Gobierno Tucumán">
+            </div>
+            <div class="ullist" id="menulist">
+                <ul class="ulnav" id="ulnavv">
+                    <li class="listItem">
+                        <a class="navlink" href="../index.html"><i class="fas fa-home"></i> Home</a>
+                    </li>
 
-                        <!-- Enlace Configuración: Solo visible para Admin -->
-                        <li class="navbar-dropdown admin-only" style="display: none;">
-                            <a href="#" class="dropdown-toggler" data-dropdown="my-dropdown-id">
-                                Configuración <i class="fa fa-angle-down"></i>
-                            </a>
-                            <ul class="dropdown" id="my-dropdown-id">
-                                <li><a href="users.html">Usuarios</a></li>
-                                <li class="separator"></li>
-                            </ul>
-                        </li>
+                    <!-- Enlace Configuración: Solo visible para Admin -->
+                    <li class="listItem admin-only" style="display: none;">
+                        <a class="navlink" href="users.html"><i class="fas fa-user-cog"></i> Usuarios</a>
+                    </li>
 
-                        <!-- Enlace Perfil: Visible para User y Admin -->
-                        <li class="authenticated profile-link" style="display: none;"><a href="profile.html">Perfil</a>
-                        </li>
+                    <!-- Enlace Perfil: Visible para User y Admin -->
+                    <li class="listItem authenticated profile-link" style="display: none;">
+                        <a class="navlink" href="profile.html"><i class="fas fa-user"></i> Perfil</a>
+                    </li>
 
-                        <li>
-                            <button class="btn-signin" id="loginBtn">Iniciar sesión</button>
-                        </li>
-                    </ul>
-                </div>
+                    <li class="listItem">
+                        <button class="btn-signin" id="loginBtn">Iniciar sesión</button>
+                    </li>
+
+                </ul>
+            </div>
+            <div class="menubar" id="menubar">
+                <i class="fas fa-bars" id="menuIcon"></i>
+                <i class="fas fa-times hide" id="closeIcon"></i>
             </div>
         </nav>
     </header>
+
     <main>
         <div class="containerPrincipal">
             <h1>Gestión de Usuarios</h1>
@@ -138,7 +130,7 @@
         <div id="editUserModal" class="modal">
             <div class="modal-content">
                 <span class="close" id="closeEditUserModal">&times;</span>
-                <h2>Editar Usuario</h2>
+                <h2 id="title">Editar Usuario</h2>
                 <form id="editUserForm">
                     <input type="hidden" id="editUserId">
 
@@ -162,8 +154,8 @@
 
                     <label for="editRole">Rol</label>
                     <select id="editRole" required>
-                        <option value="user">User</option>
-                        <option value="admin">Admin</option>
+                        <option value="user">user</option>
+                        <option value="admin">admin</option>
                     </select>
 
                     <button type="submit" class="btn-primary">Guardar Cambios</button>

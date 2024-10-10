@@ -1,3 +1,17 @@
+/* Variables de colores */
+:root {
+  --color-primary: #007BFF;
+  --color-secondary: #6C757D;
+  --color-bg: #f5f5f5;
+  --color-white: #ffffff;
+  --color-dark: #343a40;
+  --color-footer-bg: #1a1a1a;
+  --color-footer-text: #cccccc;
+  --color-error: #dc3545;
+  --font-primary: 'Roboto', sans-serif;
+}
+
+/* Reset y estilos globales */
 * {
   margin: 0;
   padding: 0;
@@ -5,209 +19,155 @@
 }
 
 body {
-  font-family: 'Arial', sans-serif;
-  background-color: #e3e3e3;
-  color: #333;
+  font-family: var(--font-primary);
+  background-color: var(--color-bg);
+  color: var(--color-dark);
+  line-height: 1.6;
 }
 
-.cotenedor-principal {
+/* Contenedor Principal */
+.contenedor-principal {
   display: flex;
   justify-content: space-between;
-  gap: 20px;
-  padding: 20px;
+  gap: 40px;
+  padding: 40px 20px;
+  max-width: 1200px;
+  margin: 0 auto;
   flex-wrap: wrap;
 }
 
-
-.seccion-tarjetas {
+/* Nuevo Contenedor para Tarjetas y Botones */
+.main-content {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  flex: 3;
+  justify-content: space-between;
+  gap: 40px;
+  flex-wrap: wrap;
 }
 
-.contenedor-tarjetas {
+/* Sección Tarjetas */
+.seccion-tarjetas {
+  flex: 2;
+  min-width: 350px;
+}
+
+.contenedor-tarjetas-primeras {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 20px;
-  justify-items: center;
 }
 
 .tarjeta {
-  background-color: #ffffff;
+  background-color: var(--color-white);
   padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   text-align: center;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
-  border-top: 4px solid #0074cc;
-  max-width: 300px;
-  margin: 20px;
+  position: relative;
+  overflow: hidden;
 }
 
-.tarjeta:hover {
-  transform: translateY(-10px);
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+.tarjeta-icon {
+  font-size: 2.5em;
+  color: var(--color-primary);
+  margin-bottom: 15px;
+  transition: transform 0.3s ease;
+}
+
+.tarjeta:hover .tarjeta-icon {
+  transform: rotate(20deg);
 }
 
 .tarjeta h2 {
-  font-size: 1.5em;
-  color: #0074cc;
+  font-size: 1.2em;
+  color: var(--color-dark);
   margin-bottom: 15px;
 }
 
-/* Estilo especial para la tarjeta grande que ocupa toda la fila */
-.tarjeta-grande {
-  grid-column: span 2; /* Para pantallas más grandes ocupará ambas columnas */
-  max-width: 100%; /* Ocupa el ancho completo */
-}
-
-@media (max-width: 768px) {
-  .tarjeta-grande {
-    grid-column: span 1; /* En pantallas más pequeñas, ocupará una columna completa */
-  }
-}
-
 .boton {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   margin-top: 10px;
-  padding: 10px 15px;
-  background-color: #007bff;
-  color: #fff;
+  padding: 10px 20px;
+  background-color: var(--color-primary);
+  color: var(--color-white);
   text-decoration: none;
-  border-radius: 5px;
-  transition: background-color 0.2s ease;
+  border-radius: 25px;
+  font-weight: 500;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.boton i {
+  margin-left: 5px;
 }
 
 .boton:hover {
-  background-color: #0056b3;
+  background-color: rgb(0, 64, 153);
+  transform: translateY(-3px);
 }
 
-/* Estilos para la sección de botones */
+/* Sección Botones */
 .seccion-botones {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex: 2;
+  margin-top: 50px;
+  flex: 1;
+  /* Hacemos más pequeña la sección de botones */
+  min-width: 300px;
 }
+
 .contenedor-botones {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
-  justify-items: center;
-  align-items: center;
+  display: flex;
+  flex-direction: column;
+  /* Botones dispuestos en columna */
+  gap: 15px;
 }
 
-/* Estilo general para los botones */
 .btn {
-  font-size: 18px;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  text-align: center;
-  font-weight: bold;
-  padding: 0.7em 2em;
-  border: 3px solid #007bff;
-  border-radius: 2px;
-  position: relative;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.1);
-  color: #007bff;
-  text-decoration: none;
-  transition: 0.3s ease all;
-  z-index: 1;
-  width: 450px; /* Ancho fijo en pantallas grandes */
-  height: 60px;
   display: flex;
-  justify-content: center;
   align-items: center;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  gap: 10px;
+  font-size: 1em;
+  font-weight: 500;
+  padding: 15px 20px;
+  background-color: var(--color-white);
+  color: var(--color-primary);
+  border: 2px solid var(--color-primary);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
 }
 
-.btn:before {
-  transition: 0.5s all ease;
-  position: absolute;
-  top: 0;
-  left: 50%;
-  right: 50%;
-  bottom: 0;
-  opacity: 0;
-  content: '';
-  background-color: #007bff;
-  z-index: -1;
+.btn i {
+  font-size: 1.2em;
 }
 
-.btn:hover, .btn:focus {
-  color: white;
+.btn:hover {
+  background-color: var(--color-primary);
+  color: var(--color-white);
+  transform: translateY(-3px);
 }
 
-.btn:hover:before, .btn:focus:before {
-  transition: 0.5s all ease;
-  left: 0;
-  right: 0;
-  opacity: 1;
+/* Quinta Tarjeta */
+.seccion-tarjeta-grande {
+  margin-top: 10px;
 }
 
-.btn:active {
-  transform: scale(0.9);
+.tarjeta-quinta {
+  grid-column: span 2;
+  max-width: 600px;
+  margin: 0 auto;
+  margin-bottom: 40px;
 }
 
-/* Media query para pantallas medianas */
-@media (max-width: 768px) {
-  .contenedor-botones {
-    grid-template-columns: 1fr; 
-    gap: 10px;
-  }
-
-  .btn {
-    width: 350px;
-    font-size: 16px; 
-    height: 55px; 
-  }
-}
-
-/* Media query para pantallas pequeñas (móviles) */
-@media (max-width: 480px) {
-  .contenedor-botones {
-    grid-template-columns: 1fr; 
-    gap: 10px;
-  }
-
-  .btn {
-    width: 100%; 
-    font-size: 14px; 
-    padding: 0.6em 1.5em;
-    height: 50px; 
-  }
-}
-
-/* Para pantallas pequeñas */
-@media (max-width: 768px) {
-  .cotenedor-principal {
-      flex-direction: column;
-      /* Las secciones se colocan una debajo de otra */
-  }
-
-  .contenedor-tarjetas {
-      grid-template-columns: 1fr;
-      /* Las tarjetas se colocan una debajo de otra en pantallas pequeñas */
-  }
-
-  .contenedor-botones {
-      grid-template-columns: 1fr;
-      /* En pantallas pequeñas los botones se colocan uno debajo del otro */
-  }
-}
-
-
+/* Footer */
 .footer {
-  background-color: #004f8b;
+  background-color: var(--color-footer-bg);
+  color: var(--color-footer-text);
   padding: 40px 20px;
-  color: #fff;
-  text-align: center;
   display: flex;
-  justify-content: space-around;
-  flex-wrap: wrap;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
 }
 
 .footer-contenido {
@@ -215,85 +175,79 @@ body {
   justify-content: space-between;
   width: 100%;
   max-width: 1200px;
-  align-items: center;
   flex-wrap: wrap;
-  gap: 20px;
+  gap: 40px;
 }
 
 .footer-contacto {
-  text-align: left;
+  flex: 1;
+  min-width: 250px;
 }
 
 .footer-contacto h3 {
   font-size: 1.5em;
   margin-bottom: 15px;
-  color: #fff;
+  color: var(--color-white);
   text-transform: uppercase;
 }
 
 .footer-contacto p {
-  margin: 5px 0;
-  font-size: 1.1em;
-  color: #e3e3e3;
+  margin: 8px 0;
+  font-size: 1em;
   display: flex;
   align-items: center;
 }
 
 .footer-contacto i {
   margin-right: 10px;
-  color: #fff;
+  color: var(--color-primary);
 }
 
 .footer-redes {
   display: flex;
-  gap: 15px;
+  gap: 20px;
 }
 
 .red-social {
-  color: #fff;
+  color: var(--color-footer-text);
   font-size: 1.5em;
-  transition: transform 0.3s ease, color 0.3s ease;
+  transition: color 0.3s ease, transform 0.3s ease;
 }
 
 .red-social:hover {
-  color: #193f8a;
-  transform: scale(1.2); /* Animación al hacer hover */
+  color: var(--color-primary);
+  transform: scale(1.2);
 }
 
-/* Responsividad para tablets */
+.footer-copy {
+  margin-top: 20px;
+  font-size: 0.9em;
+  color: var(--color-footer-text);
+}
+
+/* Media Queries para Responsividad */
 @media (max-width: 768px) {
-  .footer-contenido {
-    flex-direction: column;
-    align-items: center;
-    gap: 30px;
+  .contenedor-tarjetas-primeras {
+    grid-template-columns: 1fr;
+    /* Cambiamos a una sola columna en pantallas pequeñas */
   }
 
-  .footer-contacto h3 {
-    font-size: 1.3em;
+  .main-content {
+    .contenedor-botones {
+      flex-direction: column;
+      flex-direction: column;
+      /* Aseguramos que los botones se dispongan en columna */
+      align-items: center;
+    }
   }
 
-  .footer-contacto p {
-    font-size: 1em;
+  .seccion-tarjetas,
+  .seccion-tarjetas,
+  .seccion-botones {
+    .seccion-botones {
+      width: 100%;
+      width: 100%;
+    }
   }
 
-  .red-social {
-    font-size: 1.3em; /* Íconos más pequeños en tablets */
-  }
 }
-
-/* Responsividad para móviles */
-@media (max-width: 576px) {
-  .footer-contacto h3 {
-    font-size: 1.2em;
-  }
-
-  .footer-contacto p {
-    font-size: 0.95em;
-  }
-
-  .red-social {
-    font-size: 1.2em; /* Íconos más pequeños en móviles */
-  }
-}
-
-

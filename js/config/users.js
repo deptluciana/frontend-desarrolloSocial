@@ -2,46 +2,27 @@ const apiUrlUsers = 'http://localhost:5000/api/users';
 const apiUrlAuth = 'http://localhost:5000/api/auth';
 
 // Barra de navegación
-let dropdowns = document.querySelectorAll('.navbar .dropdown-toggler');
-let dropdownIsOpen = false;
+const navIcon = document.getElementById("menubar");
+const menuResponsive = document.getElementById("menulist");
+const nav = document.getElementById("navID");
+const menuIcon = document.getElementById("menuIcon");
+const closeIcon = document.getElementById("closeIcon");
 
-if (dropdowns.length) {
-    dropdowns.forEach((dropdown) => {
-        dropdown.addEventListener('click', (event) => {
-            let target = document.querySelector(`#${event.target.dataset.dropdown}`);
-            if (target) {
-                target.classList.toggle('show');
-                dropdownIsOpen = target.classList.contains('show');
-            }
-        });
-    });
-}
-
-window.addEventListener('mouseup', (event) => {
-    if (dropdownIsOpen) {
-        dropdowns.forEach((dropdownButton) => {
-            let dropdown = document.querySelector(`#${dropdownButton.dataset.dropdown}`);
-            let targetIsDropdown = dropdown === event.target;
-
-            if (dropdownButton !== event.target && !targetIsDropdown && !dropdown.contains(event.target)) {
-                dropdown.classList.remove('show');
-            }
-        });
-    }
+// Eventos para la barra de navegación
+navIcon.addEventListener("click", function (event) {
+    event.stopPropagation();
+    menuResponsive.classList.toggle("ullistshow");
+    navIcon.classList.toggle("open");
 });
 
-function handleSmallScreens() {
-    document.querySelector('.navbar-toggler')
-        .addEventListener('click', () => {
-            let navbarMenu = document.querySelector('.navbar-menu');
+document.addEventListener("click", function (event) {
+    const target = event.target;
 
-            if (!navbarMenu.classList.contains('active')) {
-                navbarMenu.classList.add('active');
-            } else {
-                navbarMenu.classList.remove('active');
-            }
-        });
-}
+    if (!nav.contains(target)) {
+        menuResponsive.classList.remove("ullistshow");
+        navIcon.classList.remove("open");
+    }
+});
 
 // Mostrar/ocultar contraseña en el registro
 document.getElementById('toggle-password').addEventListener('click', function () {
@@ -51,7 +32,6 @@ document.getElementById('toggle-password').addEventListener('click', function ()
     this.textContent = type === 'password' ? 'Ver contraseña' : 'Ocultar';
 });
 
-
 // Modal y Overlay
 const addUserBtn = document.getElementById('addUserBtn');
 const addUserModal = document.getElementById('addUserModal');
@@ -60,23 +40,47 @@ const editUserModal = document.getElementById('editUserModal');
 const closeEditUserModal = document.getElementById('closeEditUserModal');
 const overlay = document.getElementById('overlay');
 
+// Funciones para abrir y cerrar modales
+function openModal(modal) {
+    modal.classList.add('show');
+    overlay.classList.add('show');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeModal(modal) {
+    modal.classList.remove('show');
+    overlay.classList.remove('show');
+    document.body.style.overflow = 'auto';
+}
+
 // Mostrar modal para agregar usuario
 addUserBtn.addEventListener('click', () => {
-    addUserModal.style.display = 'block';
-    overlay.style.display = 'block';
+    openModal(addUserModal);
     document.getElementById('addUserForm').reset(); // Limpiar el formulario
 });
 
 // Cerrar modal de agregar
 closeAddUserModal.addEventListener('click', () => {
-    addUserModal.style.display = 'none';
-    overlay.style.display = 'none';
+    closeModal(addUserModal);
 });
 
 // Cerrar modal de editar
 closeEditUserModal.addEventListener('click', () => {
-    editUserModal.style.display = 'none';
-    overlay.style.display = 'none';
+    closeModal(editUserModal);
+});
+
+// Cerrar modales al hacer clic en el overlay
+overlay.addEventListener('click', () => {
+    closeModal(addUserModal);
+    closeModal(editUserModal);
+});
+
+// Cerrar modales al presionar la tecla 'Esc'
+document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+        closeModal(addUserModal);
+        closeModal(editUserModal);
+    }
 });
 
 // Variables globales para almacenar el estado de autenticación y el rol del usuario
@@ -85,70 +89,70 @@ let userRole = null;
 
 // Función para comprobar si la sesión está activa y manejar la visibilidad de los elementos
 async function checkAuth() {
-  try {
-    const response = await fetch('http://localhost:5000/api/auth/check', {
-      method: 'GET',
-      credentials: 'include' // Asegura que las cookies se envíen con la solicitud
-    });
-
-    if (response.ok) {
-      const data = await response.json();
-      if (data.authenticated) {
-        // El usuario está autenticado
-        isAuthenticated = true;
-        userRole = data.user.role; 
-
-        document.querySelector('.btn-signin').style.display = 'none';
-
-        document.querySelectorAll('.authenticated').forEach(el => {
-          el.style.display = 'block';
+    try {
+        const response = await fetch('http://localhost:5000/api/auth/check', {
+            method: 'GET',
+            credentials: 'include' // Asegura que las cookies se envíen con la solicitud
         });
 
-        if (userRole === 'admin') {
-          document.querySelectorAll('.admin-only').forEach(el => {
-            el.style.display = 'block';
-          });
-        } else if (userRole === 'user') {
-          document.querySelectorAll('.admin-only').forEach(el => {
-            el.style.display = 'none';
-          });
-        }
+        if (response.ok) {
+            const data = await response.json();
+            if (data.authenticated) {
+                // El usuario está autenticado
+                isAuthenticated = true;
+                userRole = data.user.role;
 
-      } else {
-        handleUnauthenticated();
-      }
-    } else {
-      handleUnauthenticated();
+                document.querySelector('.btn-signin').style.display = 'none';
+
+                document.querySelectorAll('.authenticated').forEach(el => {
+                    el.style.display = 'block';
+                });
+
+                if (userRole === 'admin') {
+                    document.querySelectorAll('.admin-only').forEach(el => {
+                        el.style.display = 'block';
+                    });
+                } else if (userRole === 'user') {
+                    document.querySelectorAll('.admin-only').forEach(el => {
+                        el.style.display = 'none';
+                    });
+                }
+
+            } else {
+                handleUnauthenticated();
+            }
+        } else {
+            handleUnauthenticated();
+        }
+    } catch (error) {
+        console.error('Error al verificar autenticación:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'No se pudo verificar la autenticación. Por favor, inténtalo de nuevo más tarde.',
+        });
     }
-  } catch (error) {
-    console.error('Error al verificar autenticación:', error);
-    Swal.fire({
-      icon: 'error',
-      title: 'Error',
-      text: 'No se pudo verificar la autenticación. Por favor, inténtalo de nuevo más tarde.',
-    });
-  }
 }
 
 // Función para manejar el estado no autenticado
 function handleUnauthenticated() {
-  isAuthenticated = false;
-  userRole = null;
+    isAuthenticated = false;
+    userRole = null;
 
-  // Mostrar el botón de iniciar sesión
-  document.querySelector('.btn-signin').style.display = 'block';
+    // Mostrar el botón de iniciar sesión
+    document.querySelector('.btn-signin').style.display = 'block';
 
-  // Ocultar todos los elementos con la clase 'authenticated'
-  document.querySelectorAll('.authenticated').forEach(el => {
-    el.style.display = 'none';
-  });
+    // Ocultar todos los elementos con la clase 'authenticated'
+    document.querySelectorAll('.authenticated').forEach(el => {
+        el.style.display = 'none';
+    });
 
-  // Asegurarse de que los elementos 'admin-only' estén ocultos
-  document.querySelectorAll('.admin-only').forEach(el => {
-    el.style.display = 'none';
-  });
-  
-  window.location.href = '../index.html';
+    // Asegurarse de que los elementos 'admin-only' estén ocultos
+    document.querySelectorAll('.admin-only').forEach(el => {
+        el.style.display = 'none';
+    });
+
+    window.location.href = '../index.html';
 }
 
 // Obtener todos los usuarios y mostrarlos en la tabla
@@ -219,8 +223,7 @@ async function addUser(userData) {
         if (response.ok) {
             Swal.fire('Éxito', 'Usuario agregado exitosamente.', 'success');
             fetchUsers();
-            addUserModal.style.display = 'none';
-            overlay.style.display = 'none';
+            closeModal(addUserModal);
         } else {
             Swal.fire('Error', result.message || 'Error al agregar el usuario', 'error');
         }
@@ -247,8 +250,7 @@ async function editUser(userData) {
         if (response.ok) {
             Swal.fire('Éxito', 'Usuario editado exitosamente.', 'success');
             fetchUsers();
-            editUserModal.style.display = 'none';
-            overlay.style.display = 'none';
+            closeModal(editUserModal);
         } else {
             const errorMessage = result.errors ? result.errors.join(', ') : result.message || 'Error al editar el usuario';
             Swal.fire('Error', errorMessage, 'error');
@@ -259,24 +261,62 @@ async function editUser(userData) {
     }
 }
 
-// Agregar usuario
+// Eliminar un usuario
+async function deleteUser(userId) {
+    try {
+        const response = await fetch(`${apiUrlUsers}/${userId}`, {
+            method: 'DELETE',
+            credentials: 'include'
+        });
+
+        if (response.ok) {
+            Swal.fire('Éxito', 'Usuario eliminado exitosamente.', 'success');
+            fetchUsers(); // Actualizar la tabla de usuarios después de la eliminación
+        } else {
+            Swal.fire('Error', 'Error al eliminar el usuario.', 'error');
+        }
+    } catch (error) {
+        console.error('Error al eliminar el usuario:', error);
+        Swal.fire('Error', 'Error al eliminar el usuario: ' + error.message, 'error');
+    }
+}
+
+// Manejar el envío del formulario de agregar usuario
 document.getElementById('addUserForm').addEventListener('submit', async (e) => {
     e.preventDefault();
 
     const newUser = {
-        username: document.getElementById('username').value,
-        email: document.getElementById('email').value,
+        username: document.getElementById('username').value.trim(),
+        email: document.getElementById('email').value.trim(),
         password: document.getElementById('password').value,
-        first_name: document.getElementById('firstName').value,
-        last_name: document.getElementById('lastName').value,
-        phone: document.getElementById('phone').value,
-        address: document.getElementById('address').value,
-        role: document.getElementById('role').value,
+        first_name: document.getElementById('firstName').value.trim(),
+        last_name: document.getElementById('lastName').value.trim(),
+        phone: document.getElementById('phone').value.trim(),
+        address: document.getElementById('address').value.trim(),
+        role: document.getElementById('role').value
     };
     addUser(newUser);
 });
 
-// Editar usuario
+// Manejar el envío del formulario de editar usuario
+document.getElementById('editUserForm').addEventListener('submit', (event) => {
+    event.preventDefault(); // Prevenir el comportamiento por defecto del formulario
+
+    const editedUser = {
+        id: document.getElementById('editUserId').value,
+        username: document.getElementById('editUsername').value.trim(),
+        email: document.getElementById('editEmail').value.trim(),
+        first_name: document.getElementById('editFirstName').value.trim(),
+        last_name: document.getElementById('editLastName').value.trim(),
+        phone: document.getElementById('editPhone').value.trim(),
+        address: document.getElementById('editAddress').value.trim(),
+        role: document.getElementById('editRole').value
+    };
+
+    editUser(editedUser);
+});
+
+// Manejar eventos de editar y eliminar usuarios
 document.getElementById('usersBody').addEventListener('click', (event) => {
     if (event.target.classList.contains('editUserBtn')) {
         const userId = event.target.dataset.id;
@@ -298,12 +338,11 @@ document.getElementById('usersBody').addEventListener('click', (event) => {
         document.getElementById('editEmail').value = userData.email;
         document.getElementById('editFirstName').value = userData.first_name;
         document.getElementById('editLastName').value = userData.last_name;
-        document.getElementById('editPhone').value = userData.phone;
-        document.getElementById('editAddress').value = userData.address;
+        document.getElementById('editPhone').value = userData.phone === 'N/A' ? '' : userData.phone;
+        document.getElementById('editAddress').value = userData.address === 'N/A' ? '' : userData.address;
         document.getElementById('editRole').value = userData.role;
 
-        editUserModal.style.display = 'block';
-        overlay.style.display = 'block';
+        openModal(editUserModal);
     } else if (event.target.classList.contains('deleteUserBtn')) {
         const userId = event.target.dataset.id;
 
@@ -322,44 +361,6 @@ document.getElementById('usersBody').addEventListener('click', (event) => {
         });
     }
 });
-
-// Manejar el envío del formulario de editar usuario
-document.getElementById('editUserForm').addEventListener('submit', (event) => {
-    event.preventDefault(); // Prevenir el comportamiento por defecto del formulario
-
-    const editedUser = {
-        id: document.getElementById('editUserId').value,
-        username: document.getElementById('editUsername').value,
-        email: document.getElementById('editEmail').value,
-        first_name: document.getElementById('editFirstName').value,
-        last_name: document.getElementById('editLastName').value,
-        phone: document.getElementById('editPhone').value,
-        address: document.getElementById('editAddress').value,
-        role: document.getElementById('editRole').value,
-    };
-
-    editUser(editedUser);
-});
-
-// Eliminar un usuario
-async function deleteUser(userId) {
-    try {
-        const response = await fetch(`${apiUrlUsers}/${userId}`, {
-            method: 'DELETE',
-            credentials: 'include'
-        });
-
-        if (response.ok) {
-            Swal.fire('Éxito', 'Usuario eliminado exitosamente.', 'success');
-            fetchUsers(); // Actualizar la tabla de usuarios después de la eliminación
-        } else {
-            Swal.fire('Error', 'Error al eliminar el usuario.', 'error');
-        }
-    } catch (error) {
-        console.error('Error al eliminar el usuario:', error);
-        Swal.fire('Error', 'Error al eliminar el usuario: ' + error.message, 'error');
-    }
-}
 
 // Filtro de búsqueda dinámico
 document.getElementById('searchInput').addEventListener('input', filterUsers);
@@ -392,6 +393,8 @@ function filterUsers() {
             const message = document.createElement('p');
             message.id = 'noResultsMessage';
             message.textContent = 'No se encontraron usuarios.';
+            message.style.textAlign = 'center';
+            message.style.marginTop = '20px';
             document.getElementById('usersTableContainer').appendChild(message);
         }
     } else {
@@ -402,6 +405,7 @@ function filterUsers() {
 }
 
 // Inicializar
-checkAuth();
-fetchUsers();
-handleSmallScreens();
+document.addEventListener('DOMContentLoaded', () => {
+    checkAuth();
+    fetchUsers();
+});
