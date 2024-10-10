@@ -1,3 +1,5 @@
+const apiUrlAuth = 'https://backend-desarrollosocial-production-4486.up.railway.app/api/auth';
+
 // barra de navegacion
 const navIcon = document.getElementById("menubar");
 const menuResponsive = document.getElementById("menulist");
@@ -27,7 +29,7 @@ let userRole = null;
 // Función para comprobar si la sesión está activa y manejar la visibilidad de los elementos
 async function checkAuth() {
   try {
-    const response = await fetch('https://backend-desarrollosocial-production-4486.up.railway.app/api/auth/check', {
+    const response = await fetch(`${apiUrlAuth}/check`, {
       method: 'GET',
       credentials: 'include'
     });
@@ -185,7 +187,7 @@ document.getElementById('loginForm').addEventListener('submit', async function (
   const password = document.getElementById('login-password').value;
 
   try {
-    const response = await fetch('https://backend-desarrollosocial-production-4486.up.railway.app/api/auth/login', {
+    const response = await fetch(`${apiUrlAuth}/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'

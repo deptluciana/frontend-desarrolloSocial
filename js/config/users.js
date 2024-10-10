@@ -1,5 +1,5 @@
-const apiUrlUsers = 'http://localhost:5000/api/users';
-const apiUrlAuth = 'http://localhost:5000/api/auth';
+const apiUrlUsers = 'https://backend-desarrollosocial-production-4486.up.railway.app/api/users';
+const apiUrlAuth = 'https://backend-desarrollosocial-production-4486.up.railway.app/api/auth';
 
 // Barra de navegación
 const navIcon = document.getElementById("menubar");
@@ -90,7 +90,7 @@ let userRole = null;
 // Función para comprobar si la sesión está activa y manejar la visibilidad de los elementos
 async function checkAuth() {
     try {
-        const response = await fetch('http://localhost:5000/api/auth/check', {
+        const response = await fetch(`${apiUrlAuth}/check`, {
             method: 'GET',
             credentials: 'include' // Asegura que las cookies se envíen con la solicitud
         });
