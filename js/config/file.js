@@ -488,7 +488,7 @@ addForm.addEventListener('submit', async (e) => {
     }
 
     try {
-        const response = await fetch(`${apiUrlFile}`, {
+        const response = await fetch(`${apiUrlFile}/`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
