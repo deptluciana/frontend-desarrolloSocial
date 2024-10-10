@@ -78,7 +78,7 @@ uploadForm.addEventListener('submit', async (e) => {
     formData.append('section', section); // Enviar la sección al backend
 
     try {
-        const response = await fetch(`${apiUrlFile}/upload`, {
+        const response = await fetch(`${apiUrlInfo}/upload`, {
             method: 'POST',
             body: formData,
             credentials: 'include',
@@ -117,7 +117,7 @@ uploadForm.addEventListener('submit', async (e) => {
 // Función para cargar y mostrar los archivos subidos
 async function loadFiles() {
     try {
-        const response = await fetch(`${apiUrlFile}/${section}`, {
+        const response = await fetch(`${apiUrlInfo}/${section}`, {
             method: 'GET',
             credentials: 'include',
         });
@@ -204,7 +204,7 @@ function adjustDeleteButtonsVisibility() {
 // Función para eliminar un archivo
 async function deleteFile(id) {
     try {
-        const response = await fetch(`${apiUrlFile}/delete/${id}`, {
+        const response = await fetch(`${apiUrlInfo}/delete/${id}`, {
             method: 'DELETE',
             credentials: 'include',
         });
@@ -414,7 +414,7 @@ function confirmDeletePanel(id) {
 // Función para eliminar un panel de información
 async function deleteInfoPanel(id) {
     try {
-        const response = await fetch(`${apiUrlFile}/${id}`, {
+        const response = await fetch(`${apiUrlInfo}/${id}`, {
             method: 'DELETE',
             credentials: 'include',
         });
@@ -488,7 +488,7 @@ addForm.addEventListener('submit', async (e) => {
     }
 
     try {
-        const response = await fetch(`${apiUrlFile}/`, {
+        const response = await fetch(`${apiUrlInfo}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
