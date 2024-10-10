@@ -113,7 +113,7 @@ async function handleLogin(e) {
         timer: 2000,
         showConfirmButton: true
       }).then(() => {
-        window.location.href = '/frontend/index.html';
+        window.location.href = '/';
       });
     } else {
       errorMessage.textContent = data.message || 'Error en el inicio de sesión.';
