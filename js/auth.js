@@ -1,6 +1,5 @@
 // URLs de la API
 const apiUrlUsers = 'https://backend-desarrollosocial-production-4486.up.railway.app/api/users';
-const apiUrlAuth = 'https://backend-desarrollosocial-production-4486.up.railway.app/api/auth';
 
 // Elementos del DOM
 const loginBtn = document.getElementById('loginBtn');
