@@ -353,7 +353,7 @@ editForm.addEventListener('submit', async (e) => {
     }
 
     try {
-        const response = await fetch(`${apiUrlFile}/${id}`, {
+        const response = await fetch(`${apiUrlInfo}/${id}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
