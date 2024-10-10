@@ -92,9 +92,6 @@ async function handleLogin(e) {
   const password = document.getElementById('login-password').value;
   const errorMessage = document.getElementById('error-message');
 
-  // Agrega un alert para verificar los datos que estás enviando
-  alert(`Email: ${email}, Password: ${password}`);
-
   try {
     const response = await fetch(`${apiUrlAuth}/login`, {
       method: 'POST',
@@ -106,9 +103,6 @@ async function handleLogin(e) {
     });
 
     const data = await response.json();
-
-    // Agrega un alert para mostrar el estado de la respuesta
-    alert(`Response Status: ${response.status}, Data: ${JSON.stringify(data)}`);
 
     if (response.ok) {
       Swal.fire({
@@ -122,13 +116,9 @@ async function handleLogin(e) {
       });
     } else {
       errorMessage.textContent = data.message || 'Error en el inicio de sesión.';
-      // Agrega un alert para ver el mensaje de error
-      alert(`Error: ${data.message || 'Error en el inicio de sesión.'}`);
     }
   } catch (error) {
     errorMessage.textContent = 'Error en el inicio de sesión.';
-    // Agrega un alert para ver el error en el catch
-    alert(`Error catch: ${error.message}`);
     console.error('Error en el inicio de sesión:', error);
   }
 }

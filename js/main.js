@@ -34,22 +34,12 @@ async function checkAuth() {
       credentials: 'include'
     });
 
-    // Alert para verificar el estado de la respuesta
-    alert(`Response Status: ${response.status}`);
-
     if (response.ok) {
       const data = await response.json();
-      
-      // Alert para mostrar los datos recibidos
-      alert(`Response Data: ${JSON.stringify(data)}`);
-
       if (data.authenticated) {
         // El usuario está autenticado
         isAuthenticated = true;
         userRole = data.user.role;
-
-        // Alert para indicar que la autenticación fue exitosa y el rol del usuario
-        alert(`Authenticated: true, User Role: ${userRole}`);
 
         document.querySelector('.btn-signin').style.display = 'none';
 
@@ -73,16 +63,12 @@ async function checkAuth() {
 
       } else {
         // El usuario no está autenticado
-        alert('Authenticated: false');
         handleUnauthenticated();
       }
     } else {
-      alert('Response not OK');
       handleUnauthenticated();
     }
   } catch (error) {
-    // Alert para mostrar el error si ocurre en el try-catch
-    alert(`Error catch: ${error.message}`);
     console.error('Error al verificar autenticación:', error);
     Swal.fire({
       icon: 'error',
