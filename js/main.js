@@ -1,4 +1,4 @@
-const apiUrlAuth = 'https://backend-desarrollosocial-production-4486.up.railway.app/api/auth';
+const apiUrlAuth = 'https://api.secretariaarticulacionterritorial.com/api/auth';
 
 // barra de navegacion
 const navIcon = document.getElementById("menubar");

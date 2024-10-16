@@ -1,5 +1,5 @@
 // URLs de la API
-const apiUrlUsers = 'https://backend-desarrollosocial-production-4486.up.railway.app/api/users';
+const apiUrlUsers = 'https://api.secretariaarticulacionterritorial.com/api/users';
 
 // Elementos del DOM
 const loginBtn = document.getElementById('loginBtn');

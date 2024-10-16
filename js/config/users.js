@@ -1,5 +1,5 @@
-const apiUrlUsers = 'https://backend-desarrollosocial-production-4486.up.railway.app/api/users';
-const apiUrlAuth = 'https://backend-desarrollosocial-production-4486.up.railway.app/api/auth';
+const apiUrlUsers = 'https://api.secretariaarticulacionterritorial.com/api/users';
+const apiUrlAuth = 'https://api.secretariaarticulacionterritorial.com/api/auth';
 
 // Barra de navegación
 const navIcon = document.getElementById("menubar");

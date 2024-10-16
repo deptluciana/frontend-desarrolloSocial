@@ -1,5 +1,5 @@
-const apiUrlCapacitacion = 'https://backend-desarrollosocial-production-4486.up.railway.app/api/capacitacion';
-const apiUrlAuth = 'https://backend-desarrollosocial-production-4486.up.railway.app/api/auth';
+const apiUrlCapacitacion = 'https://api.secretariaarticulacionterritorial.com/api/capacitacion';
+const apiUrlAuth = 'https://api.secretariaarticulacionterritorial.com/api/auth';
 
 // Variables globales
 let isAuthenticated = false;

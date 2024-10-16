@@ -1,5 +1,5 @@
-const apiUrlEventos = 'https://backend-desarrollosocial-production-4486.up.railway.app/api/eventos';
-const apiUrlAuth = 'https://backend-desarrollosocial-production-4486.up.railway.app/api/auth';
+const apiUrlEventos = 'https://api.secretariaarticulacionterritorial.com/api/eventos';
+const apiUrlAuth = 'https://api.secretariaarticulacionterritorial.com/api/auth';
 
 // Variables globales
 let isAuthenticated = false;

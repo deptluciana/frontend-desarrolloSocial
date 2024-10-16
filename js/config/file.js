@@ -1,7 +1,7 @@
 // URLs de la API
-const apiUrlInfo = 'https://backend-desarrollosocial-production-4486.up.railway.app/api/info';
-const apiUrlFile = 'https://backend-desarrollosocial-production-4486.up.railway.app/api/files';
-const apiUrlAuth = 'https://backend-desarrollosocial-production-4486.up.railway.app/api/auth';
+const apiUrlInfo = 'https://api.secretariaarticulacionterritorial.com/api/info';
+const apiUrlFile = 'https://api.secretariaarticulacionterritorial.com/api/files';
+const apiUrlAuth = 'https://api.secretariaarticulacionterritorial.com/api/auth';
 
 // Variables globales
 let isAuthenticated = false;
@@ -135,7 +135,7 @@ async function loadFiles() {
                 const li = document.createElement('li');
 
                 const link = document.createElement('a');
-                link.href = `https://backend-desarrollosocial-production-4486.up.railway.app${file.fileUrl}`;
+                link.href = `https://api.secretariaarticulacionterritorial.com${file.fileUrl}`;
                 link.target = '_blank';
                 link.textContent = file.filename;
 
