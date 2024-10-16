@@ -134,14 +134,19 @@ async function updateUserProfile(field) {
 // Cerrar sesión
 async function logout() {
   try {
-    await fetch(`${apiUrlAuth}/logout`, {
+    const response = await fetch(`${apiUrlAuth}/logout`, {
       method: 'POST',
       credentials: 'include'
     });
 
-    Swal.fire('Cerraste sesión correctamente', '', 'success').then(() => {
-      checkAuth();
-    });
+    if (response.ok) {
+      Swal.fire('Cerraste sesión correctamente', '', 'success').then(() => {
+        checkAuth(); // Verificar el estado de autenticación después del logout
+      });
+    } else {
+      const errorData = await response.json();
+      Swal.fire('Error', errorData.message || 'No se pudo cerrar sesión.', 'error');
+    }
   } catch (error) {
     console.error('Error al cerrar sesión:', error);
     Swal.fire('Error', 'No se pudo cerrar sesión. Inténtalo de nuevo.', 'error');

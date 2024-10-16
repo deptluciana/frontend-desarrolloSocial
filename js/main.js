@@ -92,7 +92,7 @@ function handleUnauthenticated() {
   document.querySelectorAll('.admin-only').forEach(el => {
     el.style.display = 'none';
   });
-  
+
 }
 
 // Función para abrir el modal de inicio de sesión
@@ -183,8 +183,9 @@ function attachClickHandlers() {
 document.getElementById('loginForm').addEventListener('submit', async function (event) {
   event.preventDefault(); // Evitar el comportamiento de envío por defecto
 
-  const email = document.getElementById('login-email').value;
+  const email = document.getElementById('login-email').value.trim();
   const password = document.getElementById('login-password').value;
+  const errorMessage = document.getElementById('error-message');
 
   try {
     const response = await fetch(`${apiUrlAuth}/login`, {
@@ -197,17 +198,17 @@ document.getElementById('loginForm').addEventListener('submit', async function (
     });
 
     if (response.ok) {
-      // Cerrar el modal después de un inicio de sesión exitoso
-      const modal = document.getElementById('loginModal');
-      modal.style.display = 'none';
+      // Cerrar el modal usando la función definida en Auth.js
+      closeModalFunction(loginModal); // Esto restablece `document.body.style.overflow`
 
       // Reiniciar el estado de autenticación
       await checkAuth(); // Verificar la autenticación nuevamente
     } else {
       const errorData = await response.json();
-      document.getElementById('error-message').textContent = errorData.message;
+      errorMessage.textContent = errorData.message || 'Error en el inicio de sesión.';
     }
   } catch (error) {
+    errorMessage.textContent = 'Error en el inicio de sesión.';
     console.error('Error al iniciar sesión:', error);
     Swal.fire({
       icon: 'error',
