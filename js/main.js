@@ -22,6 +22,18 @@ document.addEventListener("click", function (event) {
   }
 });
 
+window.addEventListener('pageshow', function(event) {
+  // Cerrar el modal de inicio de sesión si está abierto
+  if (loginModal.classList.contains('show')) {
+    closeModalFunction(loginModal);
+  }
+
+  // Cerrar el modal de registro si está abierto
+  if (registerModal.classList.contains('show')) {
+    closeModalFunction(registerModal);
+  }
+});
+
 // Variables globales para almacenar el estado de autenticación y el rol del usuario
 let isAuthenticated = false;
 let userRole = null;
