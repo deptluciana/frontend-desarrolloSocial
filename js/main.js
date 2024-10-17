@@ -94,6 +94,7 @@ function handleAuthenticatedUser(role) {
     el.style.display = role === 'admin' ? 'block' : 'none';
   });
 
+  // Asigna los eventos de las tarjetas después de que el usuario esté autenticado
   attachClickHandlers();
 }
 
@@ -105,6 +106,9 @@ function handleUnauthenticated() {
   document.querySelectorAll('.authenticated, .admin-only').forEach(el => {
     el.style.display = 'none';
   });
+
+  // Si no está autenticado, asocia los eventos de las tarjetas a la apertura del modal
+  attachClickHandlers();
 }
 
 // Manejadores de botones y eventos
@@ -113,14 +117,15 @@ function handleButtonClick(event) {
   const targetPage = event.currentTarget.dataset.page;
 
   if (!isAuthenticated) {
-    openLoginModal();
+    openLoginModal();  // Mostrar modal si no está autenticado
   } else {
-    redirectToPage(targetPage);
+    redirectToPage(targetPage);  // Redirigir directamente si está autenticado
   }
 }
 
 function attachClickHandlers() {
   document.querySelectorAll('.btn, .tarjeta .boton').forEach(button => {
+    button.removeEventListener('click', handleButtonClick);  // Remover cualquier evento anterior
     button.addEventListener('click', handleButtonClick);
   });
 }
