@@ -1,4 +1,5 @@
 // Constantes y variables globales
+const apiUrlAuth = 'https://api.secretariaarticulacionterritorial.com/api/auth';
 let isAuthenticated = false;
 let userRole = null;
 
