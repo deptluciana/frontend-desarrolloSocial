@@ -11,7 +11,6 @@
   <link rel="stylesheet" href="./css/auth.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 </head>
 
@@ -48,6 +47,10 @@
       </div>
     </nav>
   </header>
+
+  <div id="loader" class="loader">
+    <div class="spinner"></div>
+  </div>
 
   <main>
     <div class="contenedor-principal">
@@ -88,13 +91,18 @@
         <div class="contenedor-botones">
           <button class="btn" data-page="capacitaciones"><i class="fas fa-chalkboard-teacher"></i>
             Capacitaciones</button>
-          <button class="btn" data-page="eventos"><i class="fas fa-calendar-alt"></i> Eventos</button>
-          <button class="btn" data-page="bibliografia"><i class="fas fa-book"></i> Material Bibliografico de Apoyo</button>
-          <button class="btn" data-page="protocolos-intervencion"><i class="fas fa-procedures"></i> Protocolos de
+          <button class="btn" data-page="eventos"><i class="fas fa-calendar-alt"></i>
+            Eventos</button>
+          <button class="btn" data-page="bibliografia"><i class="fas fa-book"></i>
+            Material Bibliografico de Apoyo</button>
+          <button class="btn" data-page="protocolos-intervencion"><i class="fas fa-procedures"></i>
+            Protocolos de
             Intervención</button>
-          <button class="btn" data-page="informacion-general"><i class="fas fa-info-circle"></i> Información
+          <button class="btn" data-page="informacion-general"><i class="fas fa-info-circle"></i>
+            Información
             General</button>
-          <button class="btn" data-page="oferta-ministerial"><i class="fas fa-briefcase"></i> Oferta
+          <button class="btn" data-page="oferta-ministerial"><i class="fas fa-briefcase"></i>
+            Oferta
             Ministerial</button>
         </div>
       </section>

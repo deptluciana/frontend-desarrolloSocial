@@ -22,7 +22,7 @@ document.addEventListener("click", function (event) {
   }
 });
 
-window.addEventListener('pageshow', function(event) {
+window.addEventListener('pageshow', function (event) {
   // Cerrar el modal de inicio de sesión si está abierto
   if (loginModal.classList.contains('show')) {
     closeModalFunction(loginModal);
@@ -37,6 +37,15 @@ window.addEventListener('pageshow', function(event) {
 // Variables globales para almacenar el estado de autenticación y el rol del usuario
 let isAuthenticated = false;
 let userRole = null;
+
+// Mostrar el loader cuando la página está cargando
+document.body.classList.add('loading');
+
+// Ocultar el loader cuando la autenticación esté lista
+function hideLoader() {
+  document.body.classList.remove('loading');
+  document.body.classList.add('loaded');
+}
 
 // Función para comprobar si la sesión está activa y manejar la visibilidad de los elementos
 async function checkAuth() {
@@ -64,18 +73,15 @@ async function checkAuth() {
             el.style.display = 'block';
           });
         } else if (userRole === 'user') {
-          // Ocultar elementos exclusivos para admin
           document.querySelectorAll('.admin-only').forEach(el => {
             el.style.display = 'none';
           });
         }
 
-        // Aquí, aseguramos que se añadan los event listeners después de iniciar sesión
-        attachClickHandlers();
+        attachClickHandlers(); // Agregar event listeners después de iniciar sesión
 
       } else {
-        // El usuario no está autenticado
-        handleUnauthenticated();
+        handleUnauthenticated(); // Si no está autenticado, ocultamos el loader también
       }
     } else {
       handleUnauthenticated();
@@ -87,6 +93,8 @@ async function checkAuth() {
       title: 'Error',
       text: 'No se pudo verificar la autenticación. Por favor, inténtalo de nuevo más tarde.',
     });
+  } finally {
+    hideLoader(); // Ocultar el loader al terminar la verificación
   }
 }
 
