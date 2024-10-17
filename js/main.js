@@ -45,6 +45,13 @@ function hideLoader() {
 }
 
 // Cerrar modales al recargar página
+function closeModalFunction(modal) {
+  if (modal) {
+    modal.classList.remove('show');
+    document.body.style.overflow = 'auto';
+  }
+}
+
 window.addEventListener('pageshow', () => {
   if (loginModal.classList.contains('show')) closeModalFunction(loginModal);
   if (registerModal.classList.contains('show')) closeModalFunction(registerModal);
