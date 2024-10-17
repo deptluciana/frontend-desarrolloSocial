@@ -1,32 +1,39 @@
-// Constantes de API
 const apiUrlUsers = 'https://api.secretariaarticulacionterritorial.com/api/users';
 const apiUrlAuth = 'https://api.secretariaarticulacionterritorial.com/api/auth';
+let isAuthenticated = false;
+let userRole = null;
 
+// barra de navegacion
 const navIcon = document.getElementById("menubar");
 const menuResponsive = document.getElementById("menulist");
 const nav = document.getElementById("navID");
 const menuIcon = document.getElementById("menuIcon");
 const closeIcon = document.getElementById("closeIcon");
 
-// Variables globales para autenticación
-let isAuthenticated = false;
-let userRole = null;
 
-// barra de navegacion
 navIcon.addEventListener("click", function (event) {
-    event.stopPropagation();
-    menuResponsive.classList.toggle("ullistshow");
-    navIcon.classList.toggle("open");
+  event.stopPropagation();
+  menuResponsive.classList.toggle("ullistshow");
+  navIcon.classList.toggle("open");
 });
 
 document.addEventListener("click", function (event) {
-    const target = event.target;
+  const target = event.target;
 
-    if (!nav.contains(target)) {
-        menuResponsive.classList.remove("ullistshow");
-        navIcon.classList.remove("open");
-    }
+  if (!nav.contains(target)) {
+    menuResponsive.classList.remove("ullistshow");
+    navIcon.classList.remove("open");
+  }
 });
+
+// Mostrar el loader cuando la página está cargando
+document.body.classList.add('loading');
+
+// Ocultar el loader cuando la autenticación esté lista
+function hideLoader() {
+  document.body.classList.remove('loading');
+  document.body.classList.add('loaded');
+}
 
 // Manejo de autenticación
 async function checkAuth() {
@@ -53,6 +60,8 @@ async function checkAuth() {
       title: 'Error',
       text: 'No se pudo verificar la autenticación. Por favor, inténtalo de nuevo más tarde.',
     });
+  } finally {
+    hideLoader(); // Ocultar el loader al terminar la verificación
   }
 }
 

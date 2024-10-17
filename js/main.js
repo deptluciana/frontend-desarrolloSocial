@@ -1,194 +1,154 @@
+// Constantes y variables globales
 const apiUrlAuth = 'https://api.secretariaarticulacionterritorial.com/api/auth';
 let isAuthenticated = false;
 let userRole = null;
 
-// barra de navegacion
+// Referencias a elementos del DOM
 const navIcon = document.getElementById("menubar");
 const menuResponsive = document.getElementById("menulist");
 const nav = document.getElementById("navID");
 const menuIcon = document.getElementById("menuIcon");
 const closeIcon = document.getElementById("closeIcon");
+const loginModal = document.getElementById('loginModal');
+const registerModal = document.getElementById('registerModal');
+const loginForm = document.getElementById('loginForm');
 
-navIcon.addEventListener("click", function (event) {
-  event.stopPropagation();
-  menuResponsive.classList.toggle("ullistshow");
+// Manejo de la barra de navegación (abrir/cerrar)
+function toggleNav() {
   navIcon.classList.toggle("open");
-});
+  menuResponsive.classList.toggle("ullistshow");
+}
 
-document.addEventListener("click", function (event) {
-  const target = event.target;
-
-  if (!nav.contains(target)) {
-    menuResponsive.classList.remove("ullistshow");
+function closeNavOnOutsideClick(event) {
+  if (!nav.contains(event.target)) {
     navIcon.classList.remove("open");
+    menuResponsive.classList.remove("ullistshow");
   }
+}
+
+// Eventos de la barra de navegación
+navIcon.addEventListener("click", (event) => {
+  event.stopPropagation();
+  toggleNav();
 });
 
-window.addEventListener('pageshow', function (event) {
-  // Cerrar el modal de inicio de sesión si está abierto
-  if (loginModal.classList.contains('show')) {
-    closeModalFunction(loginModal);
-  }
+document.addEventListener("click", closeNavOnOutsideClick);
 
-  // Cerrar el modal de registro si está abierto
-  if (registerModal.classList.contains('show')) {
-    closeModalFunction(registerModal);
-  }
-});
+// Mostrar/ocultar loader
+function showLoader() {
+  document.body.classList.add('loading');
+}
 
-// Mostrar el loader cuando la página está cargando
-document.body.classList.add('loading');
-
-// Ocultar el loader cuando la autenticación esté lista
 function hideLoader() {
   document.body.classList.remove('loading');
   document.body.classList.add('loaded');
 }
 
-// Función para comprobar si la sesión está activa y manejar la visibilidad de los elementos
+// Cerrar modales al recargar página
+window.addEventListener('pageshow', () => {
+  if (loginModal.classList.contains('show')) closeModalFunction(loginModal);
+  if (registerModal.classList.contains('show')) closeModalFunction(registerModal);
+});
+
+// Verificar autenticación y manejar elementos visibles
 async function checkAuth() {
+  showLoader();
   try {
     const response = await fetch(`${apiUrlAuth}/check`, {
       method: 'GET',
       credentials: 'include'
     });
 
-    if (response.ok) {
-      const data = await response.json();
-      if (data.authenticated) {
-        // El usuario está autenticado
-        isAuthenticated = true;
-        userRole = data.user.role;
+    const data = await response.json();
 
-        document.querySelector('.btn-signin').style.display = 'none';
-
-        document.querySelectorAll('.authenticated').forEach(el => {
-          el.style.display = 'block';
-        });
-
-        if (userRole === 'admin') {
-          document.querySelectorAll('.admin-only').forEach(el => {
-            el.style.display = 'block';
-          });
-        } else if (userRole === 'user') {
-          document.querySelectorAll('.admin-only').forEach(el => {
-            el.style.display = 'none';
-          });
-        }
-
-        attachClickHandlers(); // Agregar event listeners después de iniciar sesión
-
-      } else {
-        handleUnauthenticated(); // Si no está autenticado, ocultamos el loader también
-      }
+    if (response.ok && data.authenticated) {
+      isAuthenticated = true;
+      userRole = data.user.role;
+      handleAuthenticatedUser(userRole);
     } else {
       handleUnauthenticated();
     }
   } catch (error) {
     console.error('Error al verificar autenticación:', error);
-    Swal.fire({
-      icon: 'error',
-      title: 'Error',
-      text: 'No se pudo verificar la autenticación. Por favor, inténtalo de nuevo más tarde.',
-    });
+    showAlert('error', 'Error', 'No se pudo verificar la autenticación. Por favor, inténtalo de nuevo más tarde.');
   } finally {
-    hideLoader(); // Ocultar el loader al terminar la verificación
+    hideLoader();
   }
 }
 
-// Función para manejar el estado no autenticado
+function handleAuthenticatedUser(role) {
+  document.querySelector('.btn-signin').style.display = 'none';
+
+  document.querySelectorAll('.authenticated').forEach(el => {
+    el.style.display = 'block';
+  });
+
+  document.querySelectorAll('.admin-only').forEach(el => {
+    el.style.display = role === 'admin' ? 'block' : 'none';
+  });
+
+  attachClickHandlers();
+}
+
 function handleUnauthenticated() {
   isAuthenticated = false;
   userRole = null;
 
   document.querySelector('.btn-signin').style.display = 'block';
-
-  document.querySelectorAll('.authenticated').forEach(el => {
-    el.style.display = 'none';
-  });
-
-  document.querySelectorAll('.admin-only').forEach(el => {
+  document.querySelectorAll('.authenticated, .admin-only').forEach(el => {
     el.style.display = 'none';
   });
 }
 
-// Función para abrir el modal de inicio de sesión
-function openLoginModal() {
-  const modal = document.getElementById('loginModal');
-  modal.style.display = 'block'; // Mostrar el modal
-}
-
-// Función para manejar el clic en los botones y tarjetas
+// Manejadores de botones y eventos
 function handleButtonClick(event) {
-  event.preventDefault(); // Evitar la acción predeterminada del enlace
-
-  const targetElement = event.currentTarget; // Elemento que tiene el listener
-  const targetPage = targetElement.dataset.page; // Obtener el valor de data-page
+  event.preventDefault();
+  const targetPage = event.currentTarget.dataset.page;
 
   if (!isAuthenticated) {
     openLoginModal();
-    
   } else {
-    // Redirigir a la página correspondiente
-    switch (targetPage) {
-      case 'capacitaciones':
-        window.location.href = 'pages/capacitaciones.html';
-        break;
-      case 'eventos':
-        window.location.href = 'pages/eventos.html';
-        break;
-      case 'bibliografia':
-        window.location.href = 'pages/bibliografia.html';
-        break;
-      case 'protocolos-intervencion':
-        window.location.href = 'pages/protocolos-intervencion.html';
-        break;
-      case 'informacion-general':
-        window.location.href = 'pages/informacion-general.html';
-        break;
-      case 'oferta-ministerial':
-        window.location.href = 'pages/oferta-ministerial.html';
-        break;
-      case 'politicas-alimentarias':
-        window.location.href = 'pages/politicas-alimentarias.html';
-        break;
-      case 'economia-social':
-        window.location.href = 'pages/economia-social.html';
-        break;
-      case 'subdireccion-microcreditos':
-        window.location.href = 'pages/subdireccion-microcreditos.html';
-        break;
-      case 'articulacion-territorial':
-        window.location.href = 'pages/articulacion-territorial.html';
-        break;
-      case 'gestion-documentos':
-        window.location.href = 'pages/gestion-documentos.html';
-        break;
-      default:
-        Swal.fire({
-          icon: 'error',
-          title: 'Página no encontrada',
-          text: 'La página que intentas acceder no existe.',
-        });
-        break;
-    }
+    redirectToPage(targetPage);
   }
 }
 
-// Función para adjuntar los manejadores de clics a botones y tarjetas
 function attachClickHandlers() {
-  // Seleccionar todos los botones y tarjetas
-  const buttons = document.querySelectorAll('.btn, .tarjeta .boton');
-
-  // Añadir el evento de clic a cada botón y tarjeta
-  buttons.forEach(button => {
+  document.querySelectorAll('.btn, .tarjeta .boton').forEach(button => {
     button.addEventListener('click', handleButtonClick);
   });
 }
 
-// Manejar el envío del formulario de inicio de sesión
-document.getElementById('loginForm').addEventListener('submit', async function (event) {
-  event.preventDefault(); // Evitar el comportamiento de envío por defecto
+function redirectToPage(page) {
+  const pages = {
+    'capacitaciones': 'pages/capacitaciones.html',
+    'eventos': 'pages/eventos.html',
+    'bibliografia': 'pages/bibliografia.html',
+    'protocolos-intervencion': 'pages/protocolos-intervencion.html',
+    'informacion-general': 'pages/informacion-general.html',
+    'oferta-ministerial': 'pages/oferta-ministerial.html',
+    'politicas-alimentarias': 'pages/politicas-alimentarias.html',
+    'economia-social': 'pages/economia-social.html',
+    'subdireccion-microcreditos': 'pages/subdireccion-microcreditos.html',
+    'articulacion-territorial': 'pages/articulacion-territorial.html',
+    'gestion-documentos': 'pages/gestion-documentos.html'
+  };
+
+  const url = pages[page];
+  if (url) {
+    window.location.href = url;
+  } else {
+    showAlert('error', 'Página no encontrada', 'La página que intentas acceder no existe.');
+  }
+}
+
+// Función para mostrar alertas
+function showAlert(icon, title, text) {
+  Swal.fire({ icon, title, text });
+}
+
+// Manejo del formulario de inicio de sesión
+loginForm.addEventListener('submit', async function (event) {
+  event.preventDefault();
 
   const email = document.getElementById('login-email').value.trim();
   const password = document.getElementById('login-password').value;
@@ -197,19 +157,14 @@ document.getElementById('loginForm').addEventListener('submit', async function (
   try {
     const response = await fetch(`${apiUrlAuth}/login`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
+      headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
       body: JSON.stringify({ email, password })
     });
 
     if (response.ok) {
-      // Cerrar el modal usando la función definida en Auth.js
-      closeModalFunction(loginModal); // Esto restablece `document.body.style.overflow`
-
-      // Reiniciar el estado de autenticación
-      await checkAuth(); // Verificar la autenticación nuevamente
+      closeModalFunction(loginModal);
+      await checkAuth();
     } else {
       const errorData = await response.json();
       errorMessage.textContent = errorData.message || 'Error en el inicio de sesión.';
@@ -217,13 +172,9 @@ document.getElementById('loginForm').addEventListener('submit', async function (
   } catch (error) {
     errorMessage.textContent = 'Error en el inicio de sesión.';
     console.error('Error al iniciar sesión:', error);
-    Swal.fire({
-      icon: 'error',
-      title: 'Error',
-      text: 'Hubo un problema al iniciar sesión. Por favor, inténtalo de nuevo más tarde.',
-    });
+    showAlert('error', 'Error', 'Hubo un problema al iniciar sesión. Por favor, inténtalo de nuevo más tarde.');
   }
 });
 
-// Inicializar la verificación de autenticación al cargar la página
+// Inicializar la verificación de autenticación
 checkAuth();
