@@ -11,6 +11,9 @@ const menuResponsive = document.getElementById("menulist");
 const nav = document.getElementById("navID");
 const menuIcon = document.getElementById("menuIcon");
 const closeIcon = document.getElementById("closeIcon");
+const btnSignin = document.querySelector('.btn-signin');
+const authenticatedElements = document.querySelectorAll('.authenticated');
+const adminOnlyElements = document.querySelectorAll('.admin-only');
 
 // Modal y Overlay
 const addUserBtn = document.getElementById('addUserBtn');
