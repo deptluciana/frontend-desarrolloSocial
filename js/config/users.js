@@ -1,185 +1,247 @@
-// Constantes globales
+// API Endpoints
 const apiUrlUsers = 'https://api.secretariaarticulacionterritorial.com/api/users';
 const apiUrlAuth = 'https://api.secretariaarticulacionterritorial.com/api/auth';
 
-// Elementos DOM
-const navIcon = document.getElementById("menubar");
-const menuResponsive = document.getElementById("menulist");
-const nav = document.getElementById("navID");
-const menuIcon = document.getElementById("menuIcon");
-const closeIcon = document.getElementById("closeIcon");
+// Elementos de navegación
+const navElements = {
+    navIcon: document.getElementById("menubar"),
+    menuResponsive: document.getElementById("menulist"),
+    nav: document.getElementById("navID"),
+    menuIcon: document.getElementById("menuIcon"),
+    closeIcon: document.getElementById("closeIcon")
+};
 
-const addUserBtn = document.getElementById('addUserBtn');
-const addUserModal = document.getElementById('addUserModal');
-const closeAddUserModal = document.getElementById('closeAddUserModal');
-const editUserModal = document.getElementById('editUserModal');
-const closeEditUserModal = document.getElementById('closeEditUserModal');
-const overlay = document.getElementById('overlay');
-const loader = document.getElementById('loader'); // Asumiendo que hay un elemento loader en el HTML
-const usersBody = document.getElementById('usersBody');
+// Elementos del DOM
+const domElements = {
+    passwordField: document.getElementById('password'),
+    togglePassword: document.getElementById('toggle-password'),
+    addUserBtn: document.getElementById('addUserBtn'),
+    addUserModal: document.getElementById('addUserModal'),
+    closeAddUserModal: document.getElementById('closeAddUserModal'),
+    editUserModal: document.getElementById('editUserModal'),
+    closeEditUserModal: document.getElementById('closeEditUserModal'),
+    overlay: document.getElementById('overlay'),
+    usersBody: document.getElementById('usersBody'),
+    addUserForm: document.getElementById('addUserForm'),
+    editUserForm: document.getElementById('editUserForm'),
+    searchInput: document.getElementById('searchInput'),
+    searchType: document.getElementById('searchType'),
+    noResultsMessage: document.getElementById('noResultsMessage'),
+    usersTableContainer: document.getElementById('usersTableContainer')
+};
 
-// Estado de autenticación
+// Estado de la aplicación
 let isAuthenticated = false;
 let userRole = null;
 
-// Funciones comunes
-const toggleLoader = (show) => {
-    loader.style.display = show ? 'block' : 'none';
-};
+// Navegación: Mostrar/ocultar menú
+function toggleNavMenu() {
+    navElements.menuResponsive.classList.toggle("ullistshow");
+    navElements.navIcon.classList.toggle("open");
+}
 
-const openModal = (modal) => {
-    modal.classList.add('show');
-    overlay.classList.add('show');
-    document.body.style.overflow = 'hidden';
-};
-
-const closeModal = (modal) => {
-    modal.classList.remove('show');
-    overlay.classList.remove('show');
-    document.body.style.overflow = 'auto';
-};
-
-// Navbar responsivo
-navIcon.addEventListener("click", function (event) {
+navElements.navIcon.addEventListener("click", function (event) {
     event.stopPropagation();
-    menuResponsive.classList.toggle("ullistshow");
-    navIcon.classList.toggle("open");
+    toggleNavMenu();
 });
 
+// Cerrar menú al hacer click fuera
 document.addEventListener("click", function (event) {
-    if (!nav.contains(event.target)) {
-        menuResponsive.classList.remove("ullistshow");
-        navIcon.classList.remove("open");
+    if (!navElements.nav.contains(event.target)) {
+        navElements.menuResponsive.classList.remove("ullistshow");
+        navElements.navIcon.classList.remove("open");
     }
 });
 
-// Mostrar/ocultar contraseña en el registro
-document.getElementById('toggle-password').addEventListener('click', function () {
-    const passwordField = document.getElementById('password');
-    const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
-    passwordField.setAttribute('type', type);
-    this.textContent = type === 'password' ? 'Ver contraseña' : 'Ocultar';
+// Mostrar/ocultar contraseña
+domElements.togglePassword.addEventListener('click', function () {
+    const isPassword = domElements.passwordField.getAttribute('type') === 'password';
+    domElements.passwordField.setAttribute('type', isPassword ? 'text' : 'password');
+    this.textContent = isPassword ? 'Ocultar' : 'Ver contraseña';
 });
 
-// Manejo de autenticación
-const checkAuth = async () => {
-    toggleLoader(true);
+// Modales
+function openModal(modal) {
+    modal.classList.add('show');
+    domElements.overlay.classList.add('show');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeModal(modal) {
+    modal.classList.remove('show');
+    domElements.overlay.classList.remove('show');
+    document.body.style.overflow = 'auto';
+}
+
+domElements.addUserBtn.addEventListener('click', () => {
+    openModal(domElements.addUserModal);
+    domElements.addUserForm.reset(); // Limpiar formulario
+});
+
+domElements.closeAddUserModal.addEventListener('click', () => closeModal(domElements.addUserModal));
+domElements.closeEditUserModal.addEventListener('click', () => closeModal(domElements.editUserModal));
+
+// Cerrar modal al hacer clic en el overlay o presionar 'Esc'
+domElements.overlay.addEventListener('click', () => {
+    closeModal(domElements.addUserModal);
+    closeModal(domElements.editUserModal);
+});
+
+document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+        closeModal(domElements.addUserModal);
+        closeModal(domElements.editUserModal);
+    }
+});
+
+// Loader
+function showLoader() {
+    document.body.classList.add('loading');
+}
+
+function hideLoader() {
+    document.body.classList.remove('loading');
+    document.body.classList.add('loaded');
+}
+
+// Verificar autenticación del usuario
+async function checkAuth() {
+    showLoader();
     try {
-        const response = await fetch(`${apiUrlAuth}/check`, {
-            method: 'GET',
-            credentials: 'include'
-        });
-
-        const data = await response.json();
-
-        if (response.ok && data.authenticated) {
-            isAuthenticated = true;
-            userRole = data.user.role;
-            document.querySelector('.btn-signin').style.display = 'none';
-            toggleAuthElements(true);
+        const response = await fetch(`${apiUrlAuth}/check`, { method: 'GET', credentials: 'include' });
+        if (response.ok) {
+            const data = await response.json();
+            handleAuthState(data.authenticated, data.user.role);
         } else {
             handleUnauthenticated();
         }
     } catch (error) {
-        showError('No se pudo verificar la autenticación. Por favor, inténtalo de nuevo más tarde.');
+        console.error('Error al verificar autenticación:', error);
+        Swal.fire('Error', 'No se pudo verificar la autenticación.', 'error');
     } finally {
-        toggleLoader(false);
+        hideLoader();
     }
-};
+}
 
-const handleUnauthenticated = () => {
+function handleAuthState(authenticated, role) {
+    isAuthenticated = authenticated;
+    userRole = role;
+
+    const signInButton = document.querySelector('.btn-signin');
+    const authenticatedElements = document.querySelectorAll('.authenticated');
+    const adminElements = document.querySelectorAll('.admin-only');
+
+    signInButton.style.display = isAuthenticated ? 'none' : 'block';
+    authenticatedElements.forEach(el => el.style.display = isAuthenticated ? 'block' : 'none');
+
+    if (isAuthenticated) {
+        adminElements.forEach(el => el.style.display = userRole === 'admin' ? 'block' : 'none');
+    } else {
+        handleUnauthenticated();
+    }
+}
+
+function handleUnauthenticated() {
     isAuthenticated = false;
     userRole = null;
     document.querySelector('.btn-signin').style.display = 'block';
-    toggleAuthElements(false);
+    document.querySelectorAll('.authenticated, .admin-only').forEach(el => el.style.display = 'none');
     window.location.href = '../index.html';
-};
+}
 
-const toggleAuthElements = (authenticated) => {
-    const authElements = document.querySelectorAll('.authenticated');
-    const adminElements = document.querySelectorAll('.admin-only');
-
-    authElements.forEach(el => el.style.display = authenticated ? 'block' : 'none');
-    adminElements.forEach(el => el.style.display = (authenticated && userRole === 'admin') ? 'block' : 'none');
-};
-
-// Funciones de usuarios
-const fetchUsers = async () => {
-    toggleLoader(true);
+// Obtener y renderizar usuarios
+async function fetchUsers() {
     try {
-        const response = await fetch(apiUrlUsers, {
-            method: 'GET',
-            credentials: 'include'
-        });
-        const users = await response.json();
-        response.ok ? renderUsers(users) : showError('Error al obtener los usuarios.');
+        const response = await fetch(apiUrlUsers, { method: 'GET', credentials: 'include' });
+        const users = await response.ok ? await response.json() : [];
+        renderUsers(users);
     } catch (error) {
-        showError('Error al obtener los usuarios.');
-    } finally {
-        toggleLoader(false);
+        console.error('Error al obtener los usuarios:', error);
     }
-};
+}
 
-const renderUsers = (users) => {
-    usersBody.innerHTML = '';
-    if (users.length === 0) {
-        usersBody.innerHTML = '<tr><td colspan="9">No se encontraron usuarios.</td></tr>';
-    } else {
-        users.forEach(user => {
-            usersBody.insertAdjacentHTML('beforeend', `
-                <tr>
-                    <td>${user.id}</td>
-                    <td>${user.username}</td>
-                    <td>${user.email}</td>
-                    <td>${user.first_name}</td>
-                    <td>${user.last_name}</td>
-                    <td>${user.phone || 'N/A'}</td>
-                    <td>${user.address || 'N/A'}</td>
-                    <td>${user.role}</td>
-                    <td>
-                        <button class="btn-secondary editUserBtn" data-id="${user.id}">Editar</button>
-                        <button class="btn-danger deleteUserBtn" data-id="${user.id}">Eliminar</button>
-                    </td>
-                </tr>
-            `);
-        });
-    }
-};
+function renderUsers(users) {
+    domElements.usersBody.innerHTML = users.length
+        ? users.map(user => `
+            <tr>
+                <td>${user.id}</td>
+                <td>${user.username}</td>
+                <td>${user.email}</td>
+                <td>${user.first_name}</td>
+                <td>${user.last_name}</td>
+                <td>${user.phone || 'N/A'}</td>
+                <td>${user.address || 'N/A'}</td>
+                <td>${user.role}</td>
+                <td>
+                    <button class="btn-secondary editUserBtn" data-id="${user.id}">Editar</button>
+                    <button class="btn-danger deleteUserBtn" data-id="${user.id}">Eliminar</button>
+                </td>
+            </tr>`).join('')
+        : '<tr><td colspan="9">No se encontraron usuarios.</td></tr>';
+}
 
-const addUser = async (userData) => {
-    toggleLoader(true);
+// Crear, editar y eliminar usuarios
+async function addUser(userData) {
+    await handleUserRequest('create', 'POST', userData);
+}
+
+async function editUser(userData) {
+    await handleUserRequest(userData.id, 'PUT', userData);
+}
+
+async function handleUserRequest(endpoint, method, userData) {
     try {
-        const response = await fetch(`${apiUrlUsers}/create`, {
-            method: 'POST',
+        const response = await fetch(`${apiUrlUsers}/${endpoint}`, {
+            method,
             credentials: 'include',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(userData)
         });
-
         const result = await response.json();
+
         if (response.ok) {
-            Swal.fire('Éxito', 'Usuario agregado exitosamente.', 'success');
+            Swal.fire('Éxito', 'Operación exitosa.', 'success');
             fetchUsers();
-            closeModal(addUserModal);
+            closeModal(method === 'POST' ? domElements.addUserModal : domElements.editUserModal);
         } else {
-            showError(result.message || 'Error al agregar el usuario');
+            throw new Error(result.message || 'Error en la operación');
         }
     } catch (error) {
-        showError('Error al agregar el usuario: ' + error.message);
-    } finally {
-        toggleLoader(false);
+        Swal.fire('Error', error.message, 'error');
     }
-};
+}
 
-// Función genérica para mostrar errores
-const showError = (message) => {
-    Swal.fire('Error', message, 'error');
-};
+async function deleteUser(userId) {
+    await handleUserRequest(userId, 'DELETE');
+}
 
-// Inicializar eventos y cargar datos
-document.addEventListener('DOMContentLoaded', () => {
-    checkAuth();
-    fetchUsers();
+// Formularios de agregar y editar
+domElements.addUserForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const newUser = getUserFormData();
+    addUser(newUser);
 });
 
+domElements.editUserForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const editedUser = getUserFormData(true);
+    editUser(editedUser);
+});
 
+function getUserFormData(isEdit = false) {
+    const formIdPrefix = isEdit ? 'edit' : '';
+    return {
+        id: document.getElementById(`${formIdPrefix}UserId`)?.value,
+        username: document.getElementById(`${formIdPrefix}Username`).value.trim(),
+        email: document.getElementById(`${formIdPrefix}Email`).value.trim(),
+        first_name: document.getElementById(`${formIdPrefix}FirstName`).value.trim(),
+        last_name: document.getElementById(`${formIdPrefix}LastName`).value.trim(),
+        phone: document.getElementById(`${formIdPrefix}Phone`).value.trim(),
+        address: document.getElementById(`${formIdPrefix}Address`).value.trim(),
+        role: document.getElementById(`${formIdPrefix}Role`).value.trim()
+    };
+}
+
+// Inicialización
+checkAuth();
+fetchUsers();
