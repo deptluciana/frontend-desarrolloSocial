@@ -1,4 +1,6 @@
 const apiUrlAuth = 'https://api.secretariaarticulacionterritorial.com/api/auth';
+let isAuthenticated = false;
+let userRole = null;
 
 // barra de navegacion
 const navIcon = document.getElementById("menubar");
@@ -34,20 +36,21 @@ window.addEventListener('pageshow', function (event) {
   }
 });
 
-// Variables globales para almacenar el estado de autenticación y el rol del usuario
-let isAuthenticated = false;
-let userRole = null;
-
 // Mostrar el loader cuando la página está cargando
 document.body.classList.add('loading');
 
-// Ocultar el loader cuando la autenticación esté lista
-function hideLoader() {
-  document.body.classList.remove('loading');
-  document.body.classList.add('loaded');
+function showContent() {
+  const contentWrapper = document.querySelector('.content-wrapper');
+  contentWrapper.style.display = 'block'; 
 }
 
-// Función para comprobar si la sesión está activa y manejar la visibilidad de los elementos
+// Función para ocultar el loader
+function hideLoader() {
+  const loader = document.getElementById('loader');
+  loader.style.display = 'none'; 
+}
+
+// Modificar la función checkAuth para manejar el contenido y el loader
 async function checkAuth() {
   try {
     const response = await fetch(`${apiUrlAuth}/check`, {
@@ -62,29 +65,31 @@ async function checkAuth() {
         isAuthenticated = true;
         userRole = data.user.role;
 
+        // Ocultar el botón de inicio de sesión
         document.querySelector('.btn-signin').style.display = 'none';
 
+        // Mostrar elementos de usuario autenticado
         document.querySelectorAll('.authenticated').forEach(el => {
           el.style.display = 'block';
         });
 
+        // Mostrar/Ocultar elementos según el rol del usuario
         if (userRole === 'admin') {
           document.querySelectorAll('.admin-only').forEach(el => {
             el.style.display = 'block';
           });
-        } else if (userRole === 'user') {
+        } else {
           document.querySelectorAll('.admin-only').forEach(el => {
             el.style.display = 'none';
           });
         }
 
-        attachClickHandlers(); // Agregar event listeners después de iniciar sesión
-
+        attachClickHandlers(); // Adjuntar manejadores de clic después de iniciar sesión
       } else {
-        handleUnauthenticated(); // Si no está autenticado, ocultamos el loader también
+        handleUnauthenticated(); // Manejar usuarios no autenticados
       }
     } else {
-      handleUnauthenticated();
+      handleUnauthenticated(); // Si la respuesta no es OK, manejar como no autenticado
     }
   } catch (error) {
     console.error('Error al verificar autenticación:', error);
@@ -94,7 +99,8 @@ async function checkAuth() {
       text: 'No se pudo verificar la autenticación. Por favor, inténtalo de nuevo más tarde.',
     });
   } finally {
-    hideLoader(); // Ocultar el loader al terminar la verificación
+    hideLoader();  // Ocultar el loader en todos los casos
+    showContent(); // Mostrar el contenido después de la verificación, autenticado o no
   }
 }
 
