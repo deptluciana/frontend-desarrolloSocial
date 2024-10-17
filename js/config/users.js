@@ -149,11 +149,16 @@ function handleUnauthenticated() {
     window.location.href = '../index.html';
 }
 
-// Obtener y renderizar usuarios
+// CRUD: Obtener, agregar, editar y eliminar usuarios
 async function fetchUsers() {
     try {
         const response = await fetch(apiUrlUsers, { method: 'GET', credentials: 'include' });
-        const users = await response.ok ? await response.json() : [];
+        if (!response.ok) {
+            console.error('Error al obtener los usuarios:', response.status, response.statusText);
+            return;
+        }
+
+        const users = await response.json();
         renderUsers(users);
     } catch (error) {
         console.error('Error al obtener los usuarios:', error);
@@ -180,15 +185,17 @@ function renderUsers(users) {
         : '<tr><td colspan="9">No se encontraron usuarios.</td></tr>';
 }
 
-// Crear, editar y eliminar usuarios
+// Agregar un nuevo usuario
 async function addUser(userData) {
     await handleUserRequest('create', 'POST', userData);
 }
 
+// Editar un usuario
 async function editUser(userData) {
     await handleUserRequest(userData.id, 'PUT', userData);
 }
 
+// Manejar las solicitudes CRUD (crear, editar y eliminar)
 async function handleUserRequest(endpoint, method, userData) {
     try {
         const response = await fetch(`${apiUrlUsers}/${endpoint}`, {
@@ -211,6 +218,7 @@ async function handleUserRequest(endpoint, method, userData) {
     }
 }
 
+// Eliminar un usuario
 async function deleteUser(userId) {
     await handleUserRequest(userId, 'DELETE');
 }
