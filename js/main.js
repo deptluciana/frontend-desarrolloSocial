@@ -59,7 +59,6 @@ window.addEventListener('pageshow', () => {
 
 // Verificar autenticación y manejar elementos visibles
 async function checkAuth() {
-  showLoader();
   try {
     const response = await fetch(`${apiUrlAuth}/check`, {
       method: 'GET',
@@ -79,7 +78,7 @@ async function checkAuth() {
     console.error('Error al verificar autenticación:', error);
     showAlert('error', 'Error', 'No se pudo verificar la autenticación. Por favor, inténtalo de nuevo más tarde.');
   } finally {
-    hideLoader();
+    hideLoader(); // Aseguramos que el loader se oculte una vez hecha la verificación
   }
 }
 
@@ -94,7 +93,6 @@ function handleAuthenticatedUser(role) {
     el.style.display = role === 'admin' ? 'block' : 'none';
   });
 
-  // Asigna los eventos de las tarjetas después de que el usuario esté autenticado
   attachClickHandlers();
 }
 
@@ -106,20 +104,25 @@ function handleUnauthenticated() {
   document.querySelectorAll('.authenticated, .admin-only').forEach(el => {
     el.style.display = 'none';
   });
-
-  // Si no está autenticado, asocia los eventos de las tarjetas a la apertura del modal
-  attachClickHandlers();
 }
 
 // Manejadores de botones y eventos
-function handleButtonClick(event) {
+async function handleButtonClick(event) {
   event.preventDefault();
   const targetPage = event.currentTarget.dataset.page;
 
+  // Mostrar loader siempre que se hace clic en una tarjeta
+  showLoader();
+
+  // Esperar a que se verifique la autenticación
+  await checkAuth();
+
   if (!isAuthenticated) {
-    openLoginModal();  // Mostrar modal si no está autenticado
+    hideLoader();  // Ocultar loader si no está autenticado
+    openLoginModal();  // Mostrar modal de login si no está autenticado
   } else {
-    redirectToPage(targetPage);  // Redirigir directamente si está autenticado
+    // Redirigir si está autenticado
+    redirectToPage(targetPage);
   }
 }
 
