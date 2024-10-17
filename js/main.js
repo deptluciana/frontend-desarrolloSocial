@@ -59,6 +59,7 @@ window.addEventListener('pageshow', () => {
 
 // Verificar autenticación y manejar elementos visibles
 async function checkAuth() {
+  showLoader();
   try {
     const response = await fetch(`${apiUrlAuth}/check`, {
       method: 'GET',
@@ -78,7 +79,7 @@ async function checkAuth() {
     console.error('Error al verificar autenticación:', error);
     showAlert('error', 'Error', 'No se pudo verificar la autenticación. Por favor, inténtalo de nuevo más tarde.');
   } finally {
-    hideLoader(); // Aseguramos que el loader se oculte una vez hecha la verificación
+    hideLoader();
   }
 }
 
@@ -107,28 +108,19 @@ function handleUnauthenticated() {
 }
 
 // Manejadores de botones y eventos
-async function handleButtonClick(event) {
+function handleButtonClick(event) {
   event.preventDefault();
   const targetPage = event.currentTarget.dataset.page;
 
-  // Mostrar loader siempre que se hace clic en una tarjeta
-  showLoader();
-
-  // Esperar a que se verifique la autenticación
-  await checkAuth();
-
   if (!isAuthenticated) {
-    hideLoader();  // Ocultar loader si no está autenticado
-    openLoginModal();  // Mostrar modal de login si no está autenticado
+    openLoginModal();
   } else {
-    // Redirigir si está autenticado
     redirectToPage(targetPage);
   }
 }
 
 function attachClickHandlers() {
   document.querySelectorAll('.btn, .tarjeta .boton').forEach(button => {
-    button.removeEventListener('click', handleButtonClick);  // Remover cualquier evento anterior
     button.addEventListener('click', handleButtonClick);
   });
 }
