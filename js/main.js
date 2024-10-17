@@ -110,7 +110,6 @@ function handleUnauthenticated() {
   document.querySelectorAll('.admin-only').forEach(el => {
     el.style.display = 'none';
   });
-
 }
 
 // Función para abrir el modal de inicio de sesión
@@ -127,18 +126,8 @@ function handleButtonClick(event) {
   const targetPage = targetElement.dataset.page; // Obtener el valor de data-page
 
   if (!isAuthenticated) {
-    Swal.fire({
-      icon: 'warning',
-      title: 'No estás autenticado',
-      text: 'Debes iniciar sesión para acceder a esta información.',
-      showCancelButton: true,
-      confirmButtonText: 'Iniciar Sesión',
-      cancelButtonText: 'Cancelar',
-    }).then((result) => {
-      if (result.isConfirmed) {
-        openLoginModal();
-      }
-    });
+    openLoginModal();
+    
   } else {
     // Redirigir a la página correspondiente
     switch (targetPage) {
