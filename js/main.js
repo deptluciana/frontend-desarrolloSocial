@@ -39,18 +39,13 @@ window.addEventListener('pageshow', function (event) {
 // Mostrar el loader cuando la página está cargando
 document.body.classList.add('loading');
 
-function showContent() {
-  const contentWrapper = document.querySelector('.content-wrapper');
-  contentWrapper.style.display = 'block'; 
-}
-
-// Función para ocultar el loader
+// Ocultar el loader cuando la autenticación esté lista
 function hideLoader() {
-  const loader = document.getElementById('loader');
-  loader.style.display = 'none'; 
+  document.body.classList.remove('loading');
+  document.body.classList.add('loaded');
 }
 
-// Modificar la función checkAuth para manejar el contenido y el loader
+// Función para comprobar si la sesión está activa y manejar la visibilidad de los elementos
 async function checkAuth() {
   try {
     const response = await fetch(`${apiUrlAuth}/check`, {
@@ -65,31 +60,29 @@ async function checkAuth() {
         isAuthenticated = true;
         userRole = data.user.role;
 
-        // Ocultar el botón de inicio de sesión
         document.querySelector('.btn-signin').style.display = 'none';
 
-        // Mostrar elementos de usuario autenticado
         document.querySelectorAll('.authenticated').forEach(el => {
           el.style.display = 'block';
         });
 
-        // Mostrar/Ocultar elementos según el rol del usuario
         if (userRole === 'admin') {
           document.querySelectorAll('.admin-only').forEach(el => {
             el.style.display = 'block';
           });
-        } else {
+        } else if (userRole === 'user') {
           document.querySelectorAll('.admin-only').forEach(el => {
             el.style.display = 'none';
           });
         }
 
-        attachClickHandlers(); // Adjuntar manejadores de clic después de iniciar sesión
+        attachClickHandlers(); // Agregar event listeners después de iniciar sesión
+
       } else {
-        handleUnauthenticated(); // Manejar usuarios no autenticados
+        handleUnauthenticated(); // Si no está autenticado, ocultamos el loader también
       }
     } else {
-      handleUnauthenticated(); // Si la respuesta no es OK, manejar como no autenticado
+      handleUnauthenticated();
     }
   } catch (error) {
     console.error('Error al verificar autenticación:', error);
@@ -99,8 +92,7 @@ async function checkAuth() {
       text: 'No se pudo verificar la autenticación. Por favor, inténtalo de nuevo más tarde.',
     });
   } finally {
-    hideLoader();  // Ocultar el loader en todos los casos
-    showContent(); // Mostrar el contenido después de la verificación, autenticado o no
+    hideLoader(); // Ocultar el loader al terminar la verificación
   }
 }
 
