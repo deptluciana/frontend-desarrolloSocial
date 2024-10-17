@@ -1,100 +1,94 @@
-// API Endpoints
 const apiUrlUsers = 'https://api.secretariaarticulacionterritorial.com/api/users';
 const apiUrlAuth = 'https://api.secretariaarticulacionterritorial.com/api/auth';
-
-// Elementos de navegación
-const navElements = {
-    navIcon: document.getElementById("menubar"),
-    menuResponsive: document.getElementById("menulist"),
-    nav: document.getElementById("navID"),
-    menuIcon: document.getElementById("menuIcon"),
-    closeIcon: document.getElementById("closeIcon")
-};
-
-// Elementos del DOM
-const domElements = {
-    passwordField: document.getElementById('password'),
-    togglePassword: document.getElementById('toggle-password'),
-    addUserBtn: document.getElementById('addUserBtn'),
-    addUserModal: document.getElementById('addUserModal'),
-    closeAddUserModal: document.getElementById('closeAddUserModal'),
-    editUserModal: document.getElementById('editUserModal'),
-    closeEditUserModal: document.getElementById('closeEditUserModal'),
-    overlay: document.getElementById('overlay'),
-    usersBody: document.getElementById('usersBody'),
-    addUserForm: document.getElementById('addUserForm'),
-    editUserForm: document.getElementById('editUserForm'),
-    searchInput: document.getElementById('searchInput'),
-    searchType: document.getElementById('searchType'),
-    noResultsMessage: document.getElementById('noResultsMessage'),
-    usersTableContainer: document.getElementById('usersTableContainer')
-};
 
 // Estado de la aplicación
 let isAuthenticated = false;
 let userRole = null;
 
-// Navegación: Mostrar/ocultar menú
-function toggleNavMenu() {
-    navElements.menuResponsive.classList.toggle("ullistshow");
-    navElements.navIcon.classList.toggle("open");
-}
+// Barra de navegación
+const navIcon = document.getElementById("menubar");
+const menuResponsive = document.getElementById("menulist");
+const nav = document.getElementById("navID");
+const menuIcon = document.getElementById("menuIcon");
+const closeIcon = document.getElementById("closeIcon");
 
-navElements.navIcon.addEventListener("click", function (event) {
+// Modal y Overlay
+const addUserBtn = document.getElementById('addUserBtn');
+const addUserModal = document.getElementById('addUserModal');
+const closeAddUserModal = document.getElementById('closeAddUserModal');
+const editUserModal = document.getElementById('editUserModal');
+const closeEditUserModal = document.getElementById('closeEditUserModal');
+const overlay = document.getElementById('overlay');
+
+
+// Eventos para la barra de navegación
+navIcon.addEventListener("click", function (event) {
     event.stopPropagation();
-    toggleNavMenu();
+    menuResponsive.classList.toggle("ullistshow");
+    navIcon.classList.toggle("open");
 });
 
-// Cerrar menú al hacer click fuera
 document.addEventListener("click", function (event) {
-    if (!navElements.nav.contains(event.target)) {
-        navElements.menuResponsive.classList.remove("ullistshow");
-        navElements.navIcon.classList.remove("open");
+    const target = event.target;
+
+    if (!nav.contains(target)) {
+        menuResponsive.classList.remove("ullistshow");
+        navIcon.classList.remove("open");
     }
 });
 
-// Mostrar/ocultar contraseña
-domElements.togglePassword.addEventListener('click', function () {
-    const isPassword = domElements.passwordField.getAttribute('type') === 'password';
-    domElements.passwordField.setAttribute('type', isPassword ? 'text' : 'password');
-    this.textContent = isPassword ? 'Ocultar' : 'Ver contraseña';
+// Mostrar/ocultar contraseña en el registro
+document.getElementById('toggle-password').addEventListener('click', function () {
+    const passwordField = document.getElementById('password');
+    const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
+    passwordField.setAttribute('type', type);
+    this.textContent = type === 'password' ? 'Ver contraseña' : 'Ocultar';
 });
 
-// Modales
+// Funciones para abrir y cerrar modales
 function openModal(modal) {
     modal.classList.add('show');
-    domElements.overlay.classList.add('show');
+    overlay.classList.add('show');
     document.body.style.overflow = 'hidden';
 }
 
 function closeModal(modal) {
     modal.classList.remove('show');
-    domElements.overlay.classList.remove('show');
+    overlay.classList.remove('show');
     document.body.style.overflow = 'auto';
 }
 
-domElements.addUserBtn.addEventListener('click', () => {
-    openModal(domElements.addUserModal);
-    domElements.addUserForm.reset(); // Limpiar formulario
+// Mostrar modal para agregar usuario
+addUserBtn.addEventListener('click', () => {
+    openModal(addUserModal);
+    document.getElementById('addUserForm').reset(); // Limpiar el formulario
 });
 
-domElements.closeAddUserModal.addEventListener('click', () => closeModal(domElements.addUserModal));
-domElements.closeEditUserModal.addEventListener('click', () => closeModal(domElements.editUserModal));
-
-// Cerrar modal al hacer clic en el overlay o presionar 'Esc'
-domElements.overlay.addEventListener('click', () => {
-    closeModal(domElements.addUserModal);
-    closeModal(domElements.editUserModal);
+// Cerrar modal de agregar
+closeAddUserModal.addEventListener('click', () => {
+    closeModal(addUserModal);
 });
 
+// Cerrar modal de editar
+closeEditUserModal.addEventListener('click', () => {
+    closeModal(editUserModal);
+});
+
+// Cerrar modales al hacer clic en el overlay
+overlay.addEventListener('click', () => {
+    closeModal(addUserModal);
+    closeModal(editUserModal);
+});
+
+// Cerrar modales al presionar la tecla 'Esc'
 document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape') {
-        closeModal(domElements.addUserModal);
-        closeModal(domElements.editUserModal);
+        closeModal(addUserModal);
+        closeModal(editUserModal);
     }
 });
 
-// Loader
+// Mostrar/ocultar loader
 function showLoader() {
     document.body.classList.add('loading');
 }
@@ -104,55 +98,81 @@ function hideLoader() {
     document.body.classList.add('loaded');
 }
 
-// Verificar autenticación del usuario
+// Verificar la autenticación del usuario
 async function checkAuth() {
     showLoader();
     try {
-        const response = await fetch(`${apiUrlAuth}/check`, { method: 'GET', credentials: 'include' });
+        const response = await fetch(`${apiUrlAuth}/check`, {
+            method: 'GET',
+            credentials: 'include'
+        });
         if (response.ok) {
             const data = await response.json();
-            handleAuthState(data.authenticated, data.user.role);
+            if (data.authenticated) {
+                handleAuthenticated(data.user.role);
+            } else {
+                handleUnauthenticated();
+            }
         } else {
             handleUnauthenticated();
         }
     } catch (error) {
-        console.error('Error al verificar autenticación:', error);
-        Swal.fire('Error', 'No se pudo verificar la autenticación.', 'error');
+        handleAuthError(error);
     } finally {
         hideLoader();
     }
 }
 
-function handleAuthState(authenticated, role) {
-    isAuthenticated = authenticated;
+// Manejar la autenticación exitosa
+function handleAuthenticated(role) {
+    isAuthenticated = true;
     userRole = role;
 
-    const signInButton = document.querySelector('.btn-signin');
-    const authenticatedElements = document.querySelectorAll('.authenticated');
-    const adminElements = document.querySelectorAll('.admin-only');
+    btnSignin.style.display = 'none'; // Ocultar botón de inicio de sesión
+    toggleVisibility(authenticatedElements, true);
 
-    signInButton.style.display = isAuthenticated ? 'none' : 'block';
-    authenticatedElements.forEach(el => el.style.display = isAuthenticated ? 'block' : 'none');
-
-    if (isAuthenticated) {
-        adminElements.forEach(el => el.style.display = userRole === 'admin' ? 'block' : 'none');
+    if (role === 'admin') {
+        toggleVisibility(adminOnlyElements, true);
     } else {
-        handleUnauthenticated();
+        toggleVisibility(adminOnlyElements, false);
     }
 }
 
+// Manejar la autenticación fallida
 function handleUnauthenticated() {
     isAuthenticated = false;
     userRole = null;
-    document.querySelector('.btn-signin').style.display = 'block';
-    document.querySelectorAll('.authenticated, .admin-only').forEach(el => el.style.display = 'none');
-    window.location.href = '../index.html';
+
+    btnSignin.style.display = 'block'; // Mostrar botón de inicio de sesión
+    toggleVisibility(authenticatedElements, false);
+    toggleVisibility(adminOnlyElements, false);
+
+    window.location.href = '../index.html'; // Redirigir a la página de inicio
 }
 
-// CRUD: Obtener, agregar, editar y eliminar usuarios
+// Mostrar u ocultar elementos basados en la autenticación
+function toggleVisibility(elements, isVisible) {
+    elements.forEach(el => el.style.display = isVisible ? 'block' : 'none');
+}
+
+// Manejar errores de autenticación
+function handleAuthError(error) {
+    console.error('Error al verificar autenticación:', error);
+    Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'No se pudo verificar la autenticación. Inténtalo más tarde.',
+    });
+}
+
+// Obtener todos los usuarios y mostrarlos en la tabla
 async function fetchUsers() {
     try {
-        const response = await fetch(apiUrlUsers, { method: 'GET', credentials: 'include' });
+        const response = await fetch(apiUrlUsers, {
+            method: 'GET',
+            credentials: 'include'
+        });
+
         if (!response.ok) {
             console.error('Error al obtener los usuarios:', response.status, response.statusText);
             return;
@@ -165,10 +185,19 @@ async function fetchUsers() {
     }
 }
 
+// Función para renderizar los usuarios en la tabla
 function renderUsers(users) {
-    domElements.usersBody.innerHTML = users.length
-        ? users.map(user => `
-            <tr>
+    const usersBody = document.getElementById('usersBody');
+    usersBody.innerHTML = '';
+
+    if (users.length === 0) {
+        const row = document.createElement('tr');
+        row.innerHTML = `<td colspan="9">No se encontraron usuarios.</td>`;
+        usersBody.appendChild(row);
+    } else {
+        users.forEach(user => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
                 <td>${user.id}</td>
                 <td>${user.username}</td>
                 <td>${user.email}</td>
@@ -181,75 +210,212 @@ function renderUsers(users) {
                     <button class="btn-secondary editUserBtn" data-id="${user.id}">Editar</button>
                     <button class="btn-danger deleteUserBtn" data-id="${user.id}">Eliminar</button>
                 </td>
-            </tr>`).join('')
-        : '<tr><td colspan="9">No se encontraron usuarios.</td></tr>';
+            `;
+            usersBody.appendChild(row);
+        });
+    }
 }
 
 // Agregar un nuevo usuario
 async function addUser(userData) {
-    await handleUserRequest('create', 'POST', userData);
+    try {
+        const response = await fetch(`${apiUrlUsers}/create`, {
+            method: 'POST',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(userData)
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+            Swal.fire('Éxito', 'Usuario agregado exitosamente.', 'success');
+            fetchUsers();
+            closeModal(addUserModal);
+        } else {
+            Swal.fire('Error', result.message || 'Error al agregar el usuario', 'error');
+        }
+    } catch (error) {
+        console.error('Error adding user:', error);
+        Swal.fire('Error', 'Error al agregar el usuario: ' + error.message, 'error');
+    }
 }
 
 // Editar un usuario
 async function editUser(userData) {
-    await handleUserRequest(userData.id, 'PUT', userData);
-}
-
-// Manejar las solicitudes CRUD (crear, editar y eliminar)
-async function handleUserRequest(endpoint, method, userData) {
     try {
-        const response = await fetch(`${apiUrlUsers}/${endpoint}`, {
-            method,
+        const response = await fetch(`${apiUrlUsers}/${userData.id}`, {
+            method: 'PUT',
             credentials: 'include',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json'
+            },
             body: JSON.stringify(userData)
         });
+
         const result = await response.json();
 
         if (response.ok) {
-            Swal.fire('Éxito', 'Operación exitosa.', 'success');
+            Swal.fire('Éxito', 'Usuario editado exitosamente.', 'success');
             fetchUsers();
-            closeModal(method === 'POST' ? domElements.addUserModal : domElements.editUserModal);
+            closeModal(editUserModal);
         } else {
-            throw new Error(result.message || 'Error en la operación');
+            const errorMessage = result.errors ? result.errors.join(', ') : result.message || 'Error al editar el usuario';
+            Swal.fire('Error', errorMessage, 'error');
         }
     } catch (error) {
-        Swal.fire('Error', error.message, 'error');
+        console.error('Error editing user:', error);
+        Swal.fire('Error', 'Error al editar el usuario: ' + error.message, 'error');
     }
 }
 
 // Eliminar un usuario
 async function deleteUser(userId) {
-    await handleUserRequest(userId, 'DELETE');
+    try {
+        const response = await fetch(`${apiUrlUsers}/${userId}`, {
+            method: 'DELETE',
+            credentials: 'include'
+        });
+
+        if (response.ok) {
+            Swal.fire('Éxito', 'Usuario eliminado exitosamente.', 'success');
+            fetchUsers(); // Actualizar la tabla de usuarios después de la eliminación
+        } else {
+            Swal.fire('Error', 'Error al eliminar el usuario.', 'error');
+        }
+    } catch (error) {
+        console.error('Error al eliminar el usuario:', error);
+        Swal.fire('Error', 'Error al eliminar el usuario: ' + error.message, 'error');
+    }
 }
 
-// Formularios de agregar y editar
-domElements.addUserForm.addEventListener('submit', (e) => {
+// Manejar el envío del formulario de agregar usuario
+document.getElementById('addUserForm').addEventListener('submit', async (e) => {
     e.preventDefault();
-    const newUser = getUserFormData();
+
+    const newUser = {
+        username: document.getElementById('username').value.trim(),
+        email: document.getElementById('email').value.trim(),
+        password: document.getElementById('password').value,
+        first_name: document.getElementById('firstName').value.trim(),
+        last_name: document.getElementById('lastName').value.trim(),
+        phone: document.getElementById('phone').value.trim(),
+        address: document.getElementById('address').value.trim(),
+        role: document.getElementById('role').value
+    };
     addUser(newUser);
 });
 
-domElements.editUserForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const editedUser = getUserFormData(true);
+// Manejar el envío del formulario de editar usuario
+document.getElementById('editUserForm').addEventListener('submit', (event) => {
+    event.preventDefault(); // Prevenir el comportamiento por defecto del formulario
+
+    const editedUser = {
+        id: document.getElementById('editUserId').value,
+        username: document.getElementById('editUsername').value.trim(),
+        email: document.getElementById('editEmail').value.trim(),
+        first_name: document.getElementById('editFirstName').value.trim(),
+        last_name: document.getElementById('editLastName').value.trim(),
+        phone: document.getElementById('editPhone').value.trim(),
+        address: document.getElementById('editAddress').value.trim(),
+        role: document.getElementById('editRole').value
+    };
+
     editUser(editedUser);
 });
 
-function getUserFormData(isEdit = false) {
-    const formIdPrefix = isEdit ? 'edit' : '';
-    return {
-        id: document.getElementById(`${formIdPrefix}UserId`)?.value,
-        username: document.getElementById(`${formIdPrefix}Username`).value.trim(),
-        email: document.getElementById(`${formIdPrefix}Email`).value.trim(),
-        first_name: document.getElementById(`${formIdPrefix}FirstName`).value.trim(),
-        last_name: document.getElementById(`${formIdPrefix}LastName`).value.trim(),
-        phone: document.getElementById(`${formIdPrefix}Phone`).value.trim(),
-        address: document.getElementById(`${formIdPrefix}Address`).value.trim(),
-        role: document.getElementById(`${formIdPrefix}Role`).value.trim()
-    };
+// Manejar eventos de editar y eliminar usuarios
+document.getElementById('usersBody').addEventListener('click', (event) => {
+    if (event.target.classList.contains('editUserBtn')) {
+        const userId = event.target.dataset.id;
+        const userRow = event.target.closest('tr');
+        const userData = {
+            id: userId,
+            username: userRow.cells[1].textContent,
+            email: userRow.cells[2].textContent,
+            first_name: userRow.cells[3].textContent,
+            last_name: userRow.cells[4].textContent,
+            phone: userRow.cells[5].textContent,
+            address: userRow.cells[6].textContent,
+            role: userRow.cells[7].textContent,
+        };
+
+        // Rellenar el formulario de edición
+        document.getElementById('editUserId').value = userData.id;
+        document.getElementById('editUsername').value = userData.username;
+        document.getElementById('editEmail').value = userData.email;
+        document.getElementById('editFirstName').value = userData.first_name;
+        document.getElementById('editLastName').value = userData.last_name;
+        document.getElementById('editPhone').value = userData.phone === 'N/A' ? '' : userData.phone;
+        document.getElementById('editAddress').value = userData.address === 'N/A' ? '' : userData.address;
+        document.getElementById('editRole').value = userData.role;
+
+        openModal(editUserModal);
+    } else if (event.target.classList.contains('deleteUserBtn')) {
+        const userId = event.target.dataset.id;
+
+        Swal.fire({
+            title: '¿Está seguro?',
+            text: '¡No podrás revertir esto!',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Sí, eliminarlo'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                deleteUser(userId);
+            }
+        });
+    }
+});
+
+// Filtro de búsqueda dinámico
+document.getElementById('searchInput').addEventListener('input', filterUsers);
+
+function filterUsers() {
+    const searchType = document.getElementById('searchType').value;
+    const searchValue = document.getElementById('searchInput').value.toLowerCase();
+
+    const rows = document.querySelectorAll('#usersBody tr');
+    let found = false;
+
+    rows.forEach(row => {
+        const username = row.cells[1].textContent.toLowerCase();
+        const email = row.cells[2].textContent.toLowerCase();
+
+        if (searchType === 'username' && username.includes(searchValue)) {
+            row.style.display = '';
+            found = true;
+        } else if (searchType === 'email' && email.includes(searchValue)) {
+            row.style.display = '';
+            found = true;
+        } else {
+            row.style.display = 'none';
+        }
+    });
+
+    const noResultsMessage = document.getElementById('noResultsMessage');
+    if (!found) {
+        if (!noResultsMessage) {
+            const message = document.createElement('p');
+            message.id = 'noResultsMessage';
+            message.textContent = 'No se encontraron usuarios.';
+            message.style.textAlign = 'center';
+            message.style.marginTop = '20px';
+            document.getElementById('usersTableContainer').appendChild(message);
+        }
+    } else {
+        if (noResultsMessage) {
+            noResultsMessage.remove();
+        }
+    }
 }
 
-// Inicialización
-checkAuth();
-fetchUsers();
+// Inicializar
+document.addEventListener('DOMContentLoaded', () => {
+    checkAuth();
+    fetchUsers();
+});
