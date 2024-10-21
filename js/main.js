@@ -82,11 +82,17 @@ async function checkAuth() {
 // Manejo de autenticación
 function handleAuthenticatedUser(role) {
   document.querySelector('.btn-signin').style.display = 'none';
-  
-  document.querySelectorAll('.authenticated').forEach(el => el.style.display = 'block');
-  document.querySelectorAll('.admin-only').forEach(el => el.style.display = (role === 'admin') ? 'block' : 'none');
 
-  attachClickHandlers();
+  document.querySelectorAll('.authenticated').forEach(el => {
+    el.style.display = 'block';
+  });
+
+  document.querySelectorAll('.admin-only').forEach(el => {
+    el.style.display = role === 'admin' ? 'block' : 'none';
+  });
+
+  closeModalFunction(loginModal);
+  closeModalFunction(registerModal);
 }
 
 function handleUnauthenticated() {
@@ -175,4 +181,7 @@ loginForm.addEventListener('submit', async function (event) {
 });
 
 // Inicializar verificación de autenticación
-checkAuth();
+document.addEventListener('DOMContentLoaded', async () => {
+  await checkAuth();  // Realizar la verificación de autenticación una sola vez al cargar
+  attachClickHandlers();  // Adjuntar los manejadores de eventos después de la verificación
+});
