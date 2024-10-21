@@ -285,10 +285,6 @@ footer a:hover {
     100% { transform: rotate(360deg); }
   }
   
-  /* Inicialmente, el loader estará visible */
-  body.loading #loader {
-    display: flex;
-  }
   
   /* Una vez que se complete la carga, lo ocultamos */
   body.loaded #loader {
