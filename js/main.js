@@ -2,6 +2,7 @@
 const apiUrlAuth = 'https://api.secretariaarticulacionterritorial.com/api/auth';
 let isAuthenticated = false;
 let userRole = null;
+let authChecked = false; // Nueva bandera para verificar si la autenticación ha sido comprobada
 
 // Referencias al DOM
 const navIcon = document.getElementById("menubar");
@@ -50,8 +51,8 @@ function closeModalFunction(modal) {
 }
 
 window.addEventListener('pageshow', () => {
-  if (loginModal.classList.contains('show')) closeModalFunction(loginModal);
-  if (registerModal.classList.contains('show')) closeModalFunction(registerModal);
+  closeModalFunction(loginModal);
+  closeModalFunction(registerModal);
 });
 
 // Verificar autenticación
@@ -75,6 +76,7 @@ async function checkAuth() {
     console.error('Error al verificar autenticación:', error);
     showAlert('error', 'Error', 'No se pudo verificar la autenticación. Inténtalo de nuevo más tarde.');
   } finally {
+    authChecked = true; // Autenticación comprobada
     hideLoader();
   }
 }
@@ -82,14 +84,8 @@ async function checkAuth() {
 // Manejo de autenticación
 function handleAuthenticatedUser(role) {
   document.querySelector('.btn-signin').style.display = 'none';
-
-  document.querySelectorAll('.authenticated').forEach(el => {
-    el.style.display = 'block';
-  });
-
-  document.querySelectorAll('.admin-only').forEach(el => {
-    el.style.display = role === 'admin' ? 'block' : 'none';
-  });
+  document.querySelectorAll('.authenticated').forEach(el => el.style.display = 'block');
+  document.querySelectorAll('.admin-only').forEach(el => el.style.display = (role === 'admin') ? 'block' : 'none');
 
   closeModalFunction(loginModal);
   closeModalFunction(registerModal);
@@ -107,6 +103,12 @@ function handleUnauthenticated() {
 function handleButtonClick(event) {
   event.preventDefault();
   const targetPage = event.currentTarget.dataset.page;
+
+  if (!authChecked) {
+    // Si la autenticación no ha sido comprobada, no permitir abrir el modal ni redirigir
+    showAlert('info', 'Por favor espera', 'Estamos verificando tu autenticación.');
+    return;
+  }
 
   if (!isAuthenticated) {
     openLoginModal();
@@ -182,6 +184,6 @@ loginForm.addEventListener('submit', async function (event) {
 
 // Inicializar verificación de autenticación
 document.addEventListener('DOMContentLoaded', async () => {
-  await checkAuth();  // Realizar la verificación de autenticación una sola vez al cargar
-  attachClickHandlers();  // Adjuntar los manejadores de eventos después de la verificación
+  await checkAuth();  // Verificar autenticación al cargar la página
+  attachClickHandlers();  // Adjuntar manejadores de eventos después de la verificación
 });
