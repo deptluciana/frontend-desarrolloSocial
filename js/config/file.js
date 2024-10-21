@@ -42,10 +42,20 @@ const addTypeInput = document.getElementById('addType');
 // Función de inicialización
 async function initApp() {
     await checkAuth();
-    loadFiles();
-    loadInfoPanels();
+    await Promise.all([loadFiles(), loadInfoPanels()]); // Cargar archivos y paneles al mismo tiempo
     attachAddPanelEvent();
+    hideLoader(); // Ocultar el loader una vez que todo esté cargado
 }
+
+// Función para ocultar el loader
+function hideLoader() {
+    document.body.classList.add('loaded');
+}
+
+// Mostrar el loader cuando la página empieza a cargarse
+document.addEventListener('DOMContentLoaded', function() {
+    document.body.classList.remove('loaded');
+});
 
 // Gestión de archivos
 

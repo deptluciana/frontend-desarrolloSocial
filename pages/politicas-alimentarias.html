@@ -16,6 +16,11 @@
     <header>
         <h1>Dirección de Políticas Alimentarias</h1>
     </header>
+
+    <div id="loader" class="loader">
+        <div class="spinner"></div>
+    </div>
+    
     <main>
         <div class="contenedor-info">
             <!-- Panel Principal: Información -->
@@ -27,7 +32,8 @@
                 <section class="upload-section">
                     <h2>Archivos</h2>
                     <!-- Formulario de Subida de Archivos (Solo para Admin) -->
-                    <form id="uploadForm" class="admin-only" enctype="multipart/form-data" data-section=" politicas-alimentarias">
+                    <form id="uploadForm" class="admin-only" enctype="multipart/form-data"
+                        data-section=" politicas-alimentarias">
                         <div class="file-input-container">
                             <label for="fileInput" class="file-label">
                                 <i class="fas fa-upload"></i> Seleccionar
@@ -64,7 +70,7 @@
                 <span class="close-add-modal">&times;</span>
                 <h2 class="title-modales">Agregar Nuevo Panel</h2>
                 <form id="addForm">
-                    <input type="hidden" id="addType" value=" politicas-alimentarias"/>
+                    <input type="hidden" id="addType" value=" politicas-alimentarias" />
                     <input type="text" id="addTitleInput" placeholder="Título" required />
                     <textarea id="addDescriptionInput" placeholder="Descripción" required></textarea>
                     <button type="submit" class="submit-btn">Agregar Panel</button>
