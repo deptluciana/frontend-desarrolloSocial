@@ -19,7 +19,7 @@ document.getElementById('reset-password-form').addEventListener('submit', async 
   try {
     responseMessage.innerHTML = '<div class="loader"></div>'; // Mostrar loader mientras se procesa
 
-    const response = await fetch(`http://localhost:5000/api/auth/reset-password/${token}`, {
+    const response = await fetch(`https://api.secretariaarticulacionterritorial.com/api/auth/reset-password/${token}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ newPassword }),
