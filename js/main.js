@@ -57,7 +57,6 @@ window.addEventListener('pageshow', () => {
 
 // Verificar autenticación
 async function checkAuth() {
-  showLoader();
   try {
     const response = await fetch(`${apiUrlAuth}/check`, {
       method: 'GET',
@@ -76,8 +75,7 @@ async function checkAuth() {
     console.error('Error al verificar autenticación:', error);
     showAlert('error', 'Error', 'No se pudo verificar la autenticación. Inténtalo de nuevo más tarde.');
   } finally {
-    authChecked = true; // Autenticación comprobada
-    hideLoader();
+    authChecked = true; 
   }
 }
 
@@ -105,7 +103,6 @@ function handleButtonClick(event) {
   const targetPage = event.currentTarget.dataset.page;
 
   if (!authChecked) {
-    // Si la autenticación no ha sido comprobada, no permitir abrir el modal ni redirigir
     showAlert('info', 'Por favor espera', 'Estamos verificando tu autenticación.');
     return;
   }
@@ -182,8 +179,28 @@ loginForm.addEventListener('submit', async function (event) {
   }
 });
 
-// Inicializar verificación de autenticación
-document.addEventListener('DOMContentLoaded', async () => {
-  await checkAuth();  // Verificar autenticación al cargar la página
-  attachClickHandlers();  // Adjuntar manejadores de eventos después de la verificación
-});
+// Inicializar la aplicación
+async function initApp() {
+  showLoader(); 
+
+  try {
+    await checkAuth(); 
+    await Promise.all([loadFiles(), loadInfoPanels()]); 
+
+    hideLoader(); 
+  } catch (error) {
+    console.error('Error durante la inicialización:', error);
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: 'Ocurrió un error al cargar la aplicación. Por favor, intenta de nuevo más tarde.',
+      confirmButtonText: 'Aceptar'
+    });
+    hideLoader(); 
+  }
+
+  attachClickHandlers();  
+}
+
+// Llamar a initApp al cargar el documento
+document.addEventListener('DOMContentLoaded', initApp);
