@@ -640,5 +640,13 @@ function handleUnauthenticated() {
     window.location.href = '../index.html';
 }
 
+  // Captura el botón por su ID
+  const protocolosIntervencionBtn = document.getElementById('protocolos-intervencion');
+
+  // Añade un event listener para redirigir cuando se hace clic en el botón
+  protocolosIntervencionBtn.addEventListener('click', () => {
+    window.location.href = "../pages/protocolos-intervencion.html";
+  });
+  
 // Inicializar la aplicación al cargar el DOM
 document.addEventListener('DOMContentLoaded', initApp);
