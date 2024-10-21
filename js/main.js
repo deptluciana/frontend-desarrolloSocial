@@ -2,6 +2,7 @@
 const apiUrlAuth = 'https://api.secretariaarticulacionterritorial.com/api/auth';
 let isAuthenticated = false;
 let userRole = null;
+let authChecked = false; 
 
 // Referencias al DOM
 const navIcon = document.getElementById("menubar");
@@ -75,6 +76,7 @@ async function checkAuth() {
     console.error('Error al verificar autenticación:', error);
     showAlert('error', 'Error', 'No se pudo verificar la autenticación. Inténtalo de nuevo más tarde.');
   } finally {
+    authChecked = true; // Autenticación comprobada
     hideLoader();
   }
 }
