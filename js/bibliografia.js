@@ -7,11 +7,9 @@ let userRole = null;
 
 const uploadForm = document.getElementById('uploadForm');
 const fileList = document.getElementById('fileList');
-
 const fileInput = document.getElementById('fileInput');
 const fileNameSpan = document.getElementById('file-name');
 const uploadSection = document.querySelector('.upload-section');
-
 const section = uploadForm.getAttribute('data-section');
 
 async function initApp() {
@@ -105,7 +103,7 @@ async function loadFiles() {
                 const li = document.createElement('li');
 
                 const link = document.createElement('a');
-                link.href = `https://backend-desarrollosocial-production-4486.up.railway.app${file.fileUrl}`;
+                link.href = `https://api.secretariaarticulacionterritorial.com${file.fileUrl}`;
                 link.target = '_blank';
                 link.textContent = file.filename;
 

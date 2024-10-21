@@ -40,16 +40,13 @@ const addTypeInput = document.getElementById('addType'); // Valor predeterminado
 
 // Función de inicialización
 async function initApp() {
-    await checkAuth(); // Comprobar autenticación
-    loadFiles(); // Cargar archivos subidos
-    loadInfoPanels(); // Cargar paneles de información
-    attachAddPanelEvent(); // Asignar evento al botón de agregar panel
+    await checkAuth(); 
+    loadFiles(); 
+    loadInfoPanels(); 
+    attachAddPanelEvent(); 
 }
 
-// -----------------------
 // Gestión de Archivos
-// -----------------------
-
 fileInput.addEventListener('change', () => {
     if (fileInput.files.length > 0) {
         fileNameSpan.textContent = fileInput.files[0].name;
@@ -78,7 +75,7 @@ uploadForm.addEventListener('submit', async (e) => {
     formData.append('section', section); // Enviar la sección al backend
 
     try {
-        const response = await fetch(`${apiUrlInfo}/upload`, {
+        const response = await fetch(`${apiUrlFile}/upload`, {
             method: 'POST',
             body: formData,
             credentials: 'include',
@@ -117,7 +114,7 @@ uploadForm.addEventListener('submit', async (e) => {
 // Función para cargar y mostrar los archivos subidos
 async function loadFiles() {
     try {
-        const response = await fetch(`${apiUrlInfo}/${section}`, {
+        const response = await fetch(`${apiUrlFile}/${section}`, {
             method: 'GET',
             credentials: 'include',
         });
@@ -204,7 +201,7 @@ function adjustDeleteButtonsVisibility() {
 // Función para eliminar un archivo
 async function deleteFile(id) {
     try {
-        const response = await fetch(`${apiUrlInfo}/delete/${id}`, {
+        const response = await fetch(`${apiUrlFile}/delete/${id}`, {
             method: 'DELETE',
             credentials: 'include',
         });
@@ -239,20 +236,14 @@ async function deleteFile(id) {
     }
 }
 
-// -----------------------
 // Gestión de Paneles de Información
-// -----------------------
-
-// Función para cargar los paneles de información de la sección actual
 async function loadInfoPanels() {
-    // Obtener la sección actual desde el atributo data-section del formulario de subida
     const section = uploadForm.getAttribute('data-section');
 
     // Mostrar un mensaje de carga
     principalPanel.innerHTML = '<p>Cargando información...</p>';
 
     try {
-        // Realizar una solicitud GET al backend para obtener la información de la sección
         const response = await fetch(`${apiUrlInfo}/${section}`, {
             method: 'GET',
             credentials: 'include',
