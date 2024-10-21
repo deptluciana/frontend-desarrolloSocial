@@ -640,5 +640,53 @@ function handleUnauthenticated() {
     window.location.href = '../index.html';
 }
 
+
 // Inicializar la aplicación al cargar el DOM
 document.addEventListener('DOMContentLoaded', initApp);
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Seleccionar todas las tarjetas y botones que navegan a otras páginas
+    const cardsAndButtons = document.querySelectorAll('.boton, .btn');
+  
+    // Agregar evento de clic a cada tarjeta/botón
+    cardsAndButtons.forEach(element => {
+      element.addEventListener('click', async (event) => {
+        event.preventDefault();
+        
+        // Verificar autenticación antes de continuar
+        const isAuthenticated = await checkAuthStatus(); // función asíncrona para verificar la sesión
+  
+        if (isAuthenticated) {
+          // Redirigir a la página deseada
+          const page = element.getAttribute('data-page');
+          window.location.href = `./pages/${page}.html`;
+        } else {
+          // Mostrar el modal de inicio de sesión
+          showLoginModal();
+        }
+      });
+    });
+  });
+
+  async function checkAuthStatus() {
+    try {
+      const response = await fetch(`${apiUrlAuth}/check`, {
+        method: 'GET',
+        credentials: 'include'
+      });
+  
+      if (response.ok) {
+        const data = await response.json();
+        return data.authenticated;
+      }
+      return false;
+    } catch (error) {
+      console.error('Error al verificar autenticación:', error);
+      return false;
+    }
+  }
+
+  function showLoginModal() {
+    const loginModal = document.getElementById('loginModal');
+    loginModal.style.display = 'block';
+  }
