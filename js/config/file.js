@@ -636,6 +636,8 @@ function handleUnauthenticated() {
     if (agregarPanelBtn) {
         agregarPanelBtn.style.display = 'none';
     }
+
+    window.location.href = '../index.html';
 }
 
 // Inicializar la aplicación al cargar el DOM
