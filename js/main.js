@@ -1,19 +1,17 @@
-// Constantes y variables globales
+// API y estado de autenticación
 const apiUrlAuth = 'https://api.secretariaarticulacionterritorial.com/api/auth';
 let isAuthenticated = false;
 let userRole = null;
 
-// Referencias a elementos del DOM
+// Referencias al DOM
 const navIcon = document.getElementById("menubar");
 const menuResponsive = document.getElementById("menulist");
 const nav = document.getElementById("navID");
-const menuIcon = document.getElementById("menuIcon");
-const closeIcon = document.getElementById("closeIcon");
 const loginModal = document.getElementById('loginModal');
 const registerModal = document.getElementById('registerModal');
 const loginForm = document.getElementById('loginForm');
 
-// Manejo de la barra de navegación (abrir/cerrar)
+// Manejo de la barra de navegación
 function toggleNav() {
   navIcon.classList.toggle("open");
   menuResponsive.classList.toggle("ullistshow");
@@ -26,7 +24,6 @@ function closeNavOnOutsideClick(event) {
   }
 }
 
-// Eventos de la barra de navegación
 navIcon.addEventListener("click", (event) => {
   event.stopPropagation();
   toggleNav();
@@ -34,7 +31,7 @@ navIcon.addEventListener("click", (event) => {
 
 document.addEventListener("click", closeNavOnOutsideClick);
 
-// Mostrar/ocultar loader
+// Loader
 function showLoader() {
   document.body.classList.add('loading');
 }
@@ -44,7 +41,7 @@ function hideLoader() {
   document.body.classList.add('loaded');
 }
 
-// Cerrar modales al recargar página
+// Cerrar modales en recarga de página
 function closeModalFunction(modal) {
   if (modal) {
     modal.classList.remove('show');
@@ -57,7 +54,7 @@ window.addEventListener('pageshow', () => {
   if (registerModal.classList.contains('show')) closeModalFunction(registerModal);
 });
 
-// Verificar autenticación y manejar elementos visibles
+// Verificar autenticación
 async function checkAuth() {
   showLoader();
   try {
@@ -65,7 +62,6 @@ async function checkAuth() {
       method: 'GET',
       credentials: 'include'
     });
-
     const data = await response.json();
 
     if (response.ok && data.authenticated) {
@@ -77,22 +73,18 @@ async function checkAuth() {
     }
   } catch (error) {
     console.error('Error al verificar autenticación:', error);
-    showAlert('error', 'Error', 'No se pudo verificar la autenticación. Por favor, inténtalo de nuevo más tarde.');
+    showAlert('error', 'Error', 'No se pudo verificar la autenticación. Inténtalo de nuevo más tarde.');
   } finally {
     hideLoader();
   }
 }
 
+// Manejo de autenticación
 function handleAuthenticatedUser(role) {
   document.querySelector('.btn-signin').style.display = 'none';
-
-  document.querySelectorAll('.authenticated').forEach(el => {
-    el.style.display = 'block';
-  });
-
-  document.querySelectorAll('.admin-only').forEach(el => {
-    el.style.display = role === 'admin' ? 'block' : 'none';
-  });
+  
+  document.querySelectorAll('.authenticated').forEach(el => el.style.display = 'block');
+  document.querySelectorAll('.admin-only').forEach(el => el.style.display = (role === 'admin') ? 'block' : 'none');
 
   attachClickHandlers();
 }
@@ -102,9 +94,7 @@ function handleUnauthenticated() {
   userRole = null;
 
   document.querySelector('.btn-signin').style.display = 'block';
-  document.querySelectorAll('.authenticated, .admin-only').forEach(el => {
-    el.style.display = 'none';
-  });
+  document.querySelectorAll('.authenticated, .admin-only').forEach(el => el.style.display = 'none');
 }
 
 // Manejadores de botones y eventos
@@ -125,6 +115,7 @@ function attachClickHandlers() {
   });
 }
 
+// Redirección de páginas
 function redirectToPage(page) {
   const pages = {
     'capacitaciones': 'pages/capacitaciones.html',
@@ -148,7 +139,7 @@ function redirectToPage(page) {
   }
 }
 
-// Función para mostrar alertas
+// Alertas
 function showAlert(icon, title, text) {
   Swal.fire({ icon, title, text });
 }
@@ -179,9 +170,9 @@ loginForm.addEventListener('submit', async function (event) {
   } catch (error) {
     errorMessage.textContent = 'Error en el inicio de sesión.';
     console.error('Error al iniciar sesión:', error);
-    showAlert('error', 'Error', 'Hubo un problema al iniciar sesión. Por favor, inténtalo de nuevo más tarde.');
+    showAlert('error', 'Error', 'Hubo un problema al iniciar sesión. Inténtalo de nuevo más tarde.');
   }
 });
 
-// Inicializar la verificación de autenticación
+// Inicializar verificación de autenticación
 checkAuth();
