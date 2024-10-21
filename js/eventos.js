@@ -28,6 +28,17 @@ const addUbiInput = document.getElementById('addUbiInput');
 const addHorariosInput = document.getElementById('addHorariosInput');
 const addDescriptionInput = document.getElementById('addDescriptionInput');
 
+// Loader
+function showLoader() {
+    document.body.classList.add('loading');
+}
+
+function hideLoader() {
+    document.body.classList.remove('loading');
+    document.body.classList.add('loaded');
+}
+
+
 // Función de inicialización
 async function initApp() {
     showLoader();
@@ -380,9 +391,9 @@ function handleAuthenticated(role) {
 
     if (agregarEventoBtn) {
         if (userRole === 'admin') {
-            agregarEventoBtn.style.display = 'inline-block'; 
+            agregarEventoBtn.style.display = 'inline-block';
         } else {
-            agregarEventoBtn.style.display = 'none'; 
+            agregarEventoBtn.style.display = 'none';
         }
     }
 
