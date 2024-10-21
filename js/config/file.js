@@ -38,12 +38,37 @@ const addTitleInput = document.getElementById('addTitleInput');
 const addDescriptionInput = document.getElementById('addDescriptionInput');
 const addTypeInput = document.getElementById('addType'); // Valor predeterminado en HTML
 
+// Loader
+function showLoader() {
+    document.body.classList.add('loading');
+}
+
+function hideLoader() {
+    document.body.classList.remove('loading');
+    document.body.classList.add('loaded');
+}
+
 // Función de inicialización
 async function initApp() {
-    await checkAuth();
-    loadFiles();
-    loadInfoPanels();
-    attachAddPanelEvent();
+    showLoader(); // Muestra el loader desde el inicio
+
+    try {
+        // Garantiza que todas las promesas se resuelvan antes de ocultar el loader
+        await checkAuth();  // Comprobar la autenticación y manejar el estado del usuario
+        await Promise.all([loadFiles(), loadInfoPanels()]); // Esperar a que se carguen archivos y paneles
+
+        // Aquí, todos los archivos y paneles deberían estar listos.
+        hideLoader(); // Ocultar el loader después de que todo esté completamente cargado
+    } catch (error) {
+        console.error('Error durante la inicialización:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Ocurrió un error al cargar la aplicación. Por favor, intenta de nuevo más tarde.',
+            confirmButtonText: 'Aceptar'
+        });
+        hideLoader(); // Ocultar el loader incluso si hay errores
+    }
 }
 
 // Gestión de Archivos
@@ -520,19 +545,8 @@ addForm.addEventListener('submit', async (e) => {
     }
 });
 
-// Loader
-function showLoader() {
-    document.body.classList.add('loading');
-}
-
-function hideLoader() {
-    document.body.classList.remove('loading');
-    document.body.classList.add('loaded');
-}
-
 // Función para comprobar si la sesión está activa y obtener el rol
 async function checkAuth() {
-    showLoader();
     try {
         const response = await fetch(`${apiUrlAuth}/check`, {
             method: 'GET',
@@ -557,8 +571,6 @@ async function checkAuth() {
             text: 'No se pudo verificar la autenticación. Por favor, inténtalo de nuevo más tarde.',
         });
         handleUnauthenticated();
-    } finally {
-        hideLoader();
     }
 }
 
