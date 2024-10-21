@@ -103,6 +103,7 @@ function handleButtonClick(event) {
   const targetPage = event.currentTarget.dataset.page;
 
   if (!authChecked) {
+    // Si la autenticación no ha sido comprobada, no permitir abrir el modal ni redirigir
     showAlert('info', 'Por favor espera', 'Estamos verificando tu autenticación.');
     return;
   }
@@ -184,8 +185,7 @@ async function initApp() {
   showLoader(); 
 
   try {
-    await checkAuth(); 
-    await Promise.all([loadFiles(), loadInfoPanels()]); 
+    await checkAuth();  
 
     hideLoader(); 
   } catch (error) {
