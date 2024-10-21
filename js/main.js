@@ -12,6 +12,38 @@ const loginModal = document.getElementById('loginModal');
 const registerModal = document.getElementById('registerModal');
 const loginForm = document.getElementById('loginForm');
 
+// Loader
+function showLoader() {
+  document.body.classList.add('loading');
+}
+
+function hideLoader() {
+  document.body.classList.remove('loading');
+  document.body.classList.add('loaded');
+}
+
+// Inicializar la aplicación
+async function initApp() {
+  showLoader(); 
+
+  try {
+    await checkAuth();  
+ 
+    hideLoader(); 
+  } catch (error) {
+    console.error('Error durante la inicialización:', error);
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: 'Ocurrió un error al cargar la aplicación. Por favor, intenta de nuevo más tarde.',
+      confirmButtonText: 'Aceptar'
+    });
+    hideLoader(); 
+  }
+
+  attachClickHandlers();  
+}
+
 // Manejo de la barra de navegación
 function toggleNav() {
   navIcon.classList.toggle("open");
@@ -31,16 +63,6 @@ navIcon.addEventListener("click", (event) => {
 });
 
 document.addEventListener("click", closeNavOnOutsideClick);
-
-// Loader
-function showLoader() {
-  document.body.classList.add('loading');
-}
-
-function hideLoader() {
-  document.body.classList.remove('loading');
-  document.body.classList.add('loaded');
-}
 
 // Cerrar modales en recarga de página
 function closeModalFunction(modal) {
@@ -179,28 +201,6 @@ loginForm.addEventListener('submit', async function (event) {
     showAlert('error', 'Error', 'Hubo un problema al iniciar sesión. Inténtalo de nuevo más tarde.');
   }
 });
-
-// Inicializar la aplicación
-async function initApp() {
-  showLoader(); 
-
-  try {
-    await checkAuth();  
-
-    hideLoader(); 
-  } catch (error) {
-    console.error('Error durante la inicialización:', error);
-    Swal.fire({
-      icon: 'error',
-      title: 'Error',
-      text: 'Ocurrió un error al cargar la aplicación. Por favor, intenta de nuevo más tarde.',
-      confirmButtonText: 'Aceptar'
-    });
-    hideLoader(); 
-  }
-
-  attachClickHandlers();  
-}
 
 // Llamar a initApp al cargar el documento
 document.addEventListener('DOMContentLoaded', initApp);

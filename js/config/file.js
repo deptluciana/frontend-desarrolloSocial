@@ -50,15 +50,12 @@ function hideLoader() {
 
 // Función de inicialización
 async function initApp() {
-    showLoader(); // Muestra el loader desde el inicio
-
+    showLoader(); 
     try {
-        // Garantiza que todas las promesas se resuelvan antes de ocultar el loader
-        await checkAuth();  // Comprobar la autenticación y manejar el estado del usuario
-        await Promise.all([loadFiles(), loadInfoPanels()]); // Esperar a que se carguen archivos y paneles
+        await checkAuth();  
+        await Promise.all([loadFiles(), loadInfoPanels()]); 
 
-        // Aquí, todos los archivos y paneles deberían estar listos.
-        hideLoader(); // Ocultar el loader después de que todo esté completamente cargado
+        hideLoader(); 
     } catch (error) {
         console.error('Error durante la inicialización:', error);
         Swal.fire({
@@ -67,7 +64,7 @@ async function initApp() {
             text: 'Ocurrió un error al cargar la aplicación. Por favor, intenta de nuevo más tarde.',
             confirmButtonText: 'Aceptar'
         });
-        hideLoader(); // Ocultar el loader incluso si hay errores
+        hideLoader();
     }
 }
 
@@ -97,7 +94,7 @@ uploadForm.addEventListener('submit', async (e) => {
 
     const formData = new FormData();
     formData.append('file', file);
-    formData.append('section', section); // Enviar la sección al backend
+    formData.append('section', section); 
 
     try {
         const response = await fetch(`${apiUrlFile}/upload`, {

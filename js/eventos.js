@@ -30,18 +30,28 @@ const addDescriptionInput = document.getElementById('addDescriptionInput');
 
 // Función de inicialización
 async function initApp() {
-    await checkAuth(); // Comprobar autenticación
-    loadEventPanels(); // Cargar paneles de información
-    attachAddPanelEvent(); // Asignar evento al botón de agregar panel
+    showLoader();
+    try {
+        await checkAuth();
+        await Promise.all([loadEventPanels()]);
+        hideLoader();
+    } catch (error) {
+        console.error('Error durante la inicialización:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Ocurrió un error al cargar la aplicación. Por favor, intenta de nuevo más tarde.',
+            confirmButtonText: 'Aceptar'
+        });
+        hideLoader();
+    }
 }
 
-// -----------------------
 // Gestión de eventos de Información
-// -----------------------
+
 // Función para cargar los paneles de información de la sección actual
 async function loadEventPanels() {
 
-    // Mostrar un mensaje de carga
     principalPanel.innerHTML = '<p>Cargando información...</p>';
 
     try {
@@ -138,7 +148,7 @@ editForm.addEventListener('submit', async (e) => {
     const id = editIdInput.value;
     const title = editTitleInput.value.trim();
     const ubicacion = editUbiInput.value.trim();
-    const horarios = editHorariosInput.value.trim(); 
+    const horarios = editHorariosInput.value.trim();
     const description = editDescriptionInput.value.trim();
 
     if (!title || !description) {
@@ -169,7 +179,6 @@ editForm.addEventListener('submit', async (e) => {
                 confirmButtonText: 'Aceptar'
             }).then(() => {
                 editModal.style.display = 'none';
-                // Recargar los paneles de información para reflejar los cambios
                 loadEventPanels();
             });
         } else {
@@ -226,7 +235,6 @@ async function deletePanel(id) {
                 text: 'Panel eliminado correctamente.',
                 confirmButtonText: 'Aceptar'
             }).then(() => {
-                // Recargar los paneles de información para reflejar los cambios
                 loadEventPanels();
             });
         } else {
@@ -248,9 +256,6 @@ async function deletePanel(id) {
         });
     }
 }
-
-
-// Agregar Nuevos Paneles de Información
 
 // Asignar evento al botón de agregar panel
 function attachAddPanelEvent() {
@@ -299,7 +304,7 @@ addForm.addEventListener('submit', async (e) => {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ title, ubicacion, horarios,description  }),
+            body: JSON.stringify({ title, ubicacion, horarios, description }),
             credentials: 'include',
         });
 
@@ -312,7 +317,6 @@ addForm.addEventListener('submit', async (e) => {
                 confirmButtonText: 'Aceptar'
             }).then(() => {
                 addModal.style.display = 'none';
-                // Recargar los paneles de información para incluir el nuevo panel
                 loadEventPanels();
             });
         } else {
@@ -370,22 +374,18 @@ function handleAuthenticated(role) {
     isAuthenticated = true;
     userRole = role;
 
-    // Agregar clase 'admin' al body si el usuario es admin
     if (userRole === 'admin') {
         document.body.classList.add('admin');
     }
 
-    // Mostrar el botón de agregar panel si es admin
-      // Mostrar el botón de agregar panel si es admin
-      if (agregarEventoBtn) {
+    if (agregarEventoBtn) {
         if (userRole === 'admin') {
-            agregarEventoBtn.style.display = 'inline-block'; // Mostrar solo si es admin
+            agregarEventoBtn.style.display = 'inline-block'; 
         } else {
-            agregarEventoBtn.style.display = 'none'; // Ocultar si no es admin
+            agregarEventoBtn.style.display = 'none'; 
         }
     }
 
-    // Asignar evento al botón de agregar panel
     attachAddPanelEvent();
 }
 
@@ -394,21 +394,16 @@ function handleUnauthenticated() {
     isAuthenticated = false;
     userRole = null;
 
-
-    // Mostrar solo la sección de archivos subidos
     if (fileList) {
         document.getElementById('archivos-subidos').style.display = 'block';
     }
 
-    // Asegurarse de que los botones de eliminar estén ocultos
     document.querySelectorAll('.delete-button').forEach(button => {
         button.style.display = 'none';
     });
 
-    // Remover clase 'admin' del body si existía
     document.body.classList.remove('admin');
 
-    // Ocultar el botón de agregar panel
     if (agregarPanelBtn) {
         agregarPanelBtn.style.display = 'none';
     }
