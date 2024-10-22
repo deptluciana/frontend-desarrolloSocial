@@ -24,12 +24,12 @@ function hideLoader() {
 
 // Inicializar la aplicación
 async function initApp() {
-  showLoader();
+  showLoader(); 
 
   try {
-    await checkAuth();  // Verificar autenticación al iniciar la app
+    await checkAuth();  
 
-    hideLoader();
+    hideLoader(); 
   } catch (error) {
     console.error('Error durante la inicialización:', error);
     Swal.fire({
@@ -38,10 +38,10 @@ async function initApp() {
       text: 'Ocurrió un error al cargar la aplicación. Por favor, intenta de nuevo más tarde.',
       confirmButtonText: 'Aceptar'
     });
-    hideLoader();
+    hideLoader(); 
   }
 
-  attachClickHandlers();  // Asociar eventos de clic después de inicializar
+  attachClickHandlers();  
 }
 
 // Manejo de la barra de navegación
@@ -97,11 +97,7 @@ async function checkAuth() {
     console.error('Error al verificar autenticación:', error);
     showAlert('error', 'Error', 'No se pudo verificar la autenticación. Inténtalo de nuevo más tarde.');
   } finally {
-    authChecked = true; 
-    // Aquí habilitamos las tarjetas solo después de verificar la autenticación
-    document.querySelectorAll('.btn, .tarjeta .boton').forEach(button => {
-      button.classList.remove('disabled'); // Quitar la clase 'disabled' cuando esté listo
-    });
+    authChecked = true;  // Se asegura que esto siempre se ejecute, incluso si ocurre un error
   }
 }
 
@@ -111,7 +107,6 @@ function handleAuthenticatedUser(role) {
   document.querySelectorAll('.authenticated').forEach(el => el.style.display = 'block');
   document.querySelectorAll('.admin-only').forEach(el => el.style.display = (role === 'admin') ? 'block' : 'none');
 
-  // Cerrar modal de login si está abierto
   closeModalFunction(loginModal);
   closeModalFunction(registerModal);
 }
@@ -129,17 +124,17 @@ function handleButtonClick(event) {
   event.preventDefault();
   const targetPage = event.currentTarget.dataset.page;
 
+  // Si la autenticación aún no ha sido verificada, no hacer nada
   if (!authChecked) {
-    // Si la autenticación no ha sido comprobada, no permitir abrir el modal ni redirigir
     showAlert('info', 'Por favor espera', 'Estamos verificando tu autenticación.');
     return;
   }
 
+  // Si no está autenticado, mostrar modal de inicio de sesión
   if (!isAuthenticated) {
-    // Mostrar el modal solo si el usuario NO está autenticado
-    openLoginModal();
+    openLoginModal(); // Abre el modal sólo si la autenticación ya fue verificada y no está autenticado
   } else {
-    // Si está autenticado, redirigir directamente a la página sin mostrar el modal
+    // Si está autenticado, redirigir directamente
     redirectToPage(targetPage);
   }
 }
@@ -150,9 +145,11 @@ function attachClickHandlers() {
   });
 }
 
-
 // Redirección de páginas
 function redirectToPage(page) {
+  showLoader(); 
+  closeModalFunction(loginModal);
+
   const pages = {
     'capacitaciones': 'pages/capacitaciones.html',
     'eventos': 'pages/eventos.html',
@@ -171,6 +168,7 @@ function redirectToPage(page) {
   if (url) {
     window.location.href = url;
   } else {
+    hideLoader();
     showAlert('error', 'Página no encontrada', 'La página que intentas acceder no existe.');
   }
 }
