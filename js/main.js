@@ -98,6 +98,10 @@ async function checkAuth() {
     showAlert('error', 'Error', 'No se pudo verificar la autenticación. Inténtalo de nuevo más tarde.');
   } finally {
     authChecked = true; 
+    // Aquí habilitamos las tarjetas solo después de verificar la autenticación
+    document.querySelectorAll('.btn, .tarjeta .boton').forEach(button => {
+      button.classList.remove('disabled'); // Quitar la clase 'disabled' cuando esté listo
+    });
   }
 }
 
@@ -131,14 +135,15 @@ function handleButtonClick(event) {
   }
 
   if (!isAuthenticated) {
-    openLoginModal();
+    openLoginModal(); // Mostrar el modal solo si no está autenticado
   } else {
-    redirectToPage(targetPage);
+    redirectToPage(targetPage); // Redirigir directamente si está autenticado
   }
 }
 
 function attachClickHandlers() {
   document.querySelectorAll('.btn, .tarjeta .boton').forEach(button => {
+    button.classList.add('disabled'); // Añadir una clase 'disabled' para desactivar
     button.addEventListener('click', handleButtonClick);
   });
 }
