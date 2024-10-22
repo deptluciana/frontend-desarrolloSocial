@@ -15,30 +15,16 @@ const section = uploadForm.getAttribute('data-section');
 // Loader
 function showLoader() {
     document.body.classList.add('loading');
-}
-
-function hideLoader() {
+  }
+  
+  function hideLoader() {
     document.body.classList.remove('loading');
     document.body.classList.add('loaded');
-}
-
+  }
+  
 async function initApp() {
-    showLoader();
-    try {
-        await checkAuth();
-        await Promise.all([loadFiles()]);
-        hideLoader();
-    } catch (error) {
-        console.error('Error durante la inicialización:', error);
-        Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: 'Ocurrió un error al cargar la aplicación. Por favor, intenta de nuevo más tarde.',
-            confirmButtonText: 'Aceptar'
-        });
-        hideLoader();
-    }
-
+    await checkAuth(); // Comprobar autenticación
+    loadFiles(); // Cargar archivos subidos
 }
 
 // Actualizar el nombre del archivo seleccionado
@@ -263,8 +249,6 @@ function handleAuthenticated(role) {
     if (fileList) {
         document.getElementById('archivos-subidos').style.display = 'block';
     }
-
-    
 }
 
 // Función para comprobar si la sesión está activa y obtener el rol
