@@ -290,113 +290,107 @@ async function loadInfoPanels() {
     }
 }
 
-// Función para renderizar los paneles de información
+// Función para renderizar los paneles de información en el DOM
 function renderInfoPanels(infoList) {
-    principalPanel.innerHTML = '';
-
     if (infoList.length === 0) {
-        principalPanel.innerHTML = '<p>No hay información disponible.</p>';
+        principalPanel.innerHTML = '<p>No hay información para mostrar en esta sección.</p>';
         return;
     }
 
+    // Limpiar el contenedor principal
+    principalPanel.innerHTML = '';
+
     infoList.forEach(info => {
         const panel = document.createElement('div');
-        panel.classList.add('panel');
+        panel.classList.add('subpanel');
+        panel.setAttribute('data-info-type', info.section);
+        panel.setAttribute('data-info-id', info.id);
 
-        const title = document.createElement('h3');
-        title.textContent = info.title;
+        panel.innerHTML = `
+            <div class="subpanel-header">
+                <h2 class="subpanel-title">${info.title}</h2>
+                <div class="iconos-subpanel">
+                    <i class="fas fa-edit editar-subpanel" title="Editar"></i>
+                    <i class="fas fa-trash-alt eliminar-subpanel" title="Eliminar"></i>
+                </div>
+            </div>
+            <div class="subpanel-content">
+                <p class="info-text">${info.description}</p>
+            </div>
+        `;
 
-        const description = document.createElement('p');
-        description.textContent = info.description;
+        // Agregar eventos para los iconos de editar y eliminar
+        const editIcon = panel.querySelector('.editar-subpanel');
+        const deleteIcon = panel.querySelector('.eliminar-subpanel');
 
-        // Solo los administradores pueden ver los botones de editar y eliminar
+        // Solo mostrar los iconos si el usuario es admin
         if (userRole === 'admin') {
-            const editButton = document.createElement('button');
-            editButton.innerHTML = '<i class="fas fa-edit"></i> Editar';
-            editButton.classList.add('edit-button');
-            editButton.onclick = () => openEditModal(info);
+            editIcon.style.display = 'inline-block';
+            deleteIcon.style.display = 'inline-block';
 
-            const deleteButton = document.createElement('button');
-            deleteButton.innerHTML = '<i class="fas fa-trash-alt"></i> Eliminar';
-            deleteButton.classList.add('delete-button');
-            deleteButton.onclick = () => {
-                Swal.fire({
-                    title: '¿Estás seguro?',
-                    text: "¿Deseas eliminar este panel de información?",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#d33',
-                    cancelButtonColor: '#3085d6',
-                    confirmButtonText: 'Sí, eliminar',
-                    cancelButtonText: 'Cancelar'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        deleteInfo(info.id);
-                    }
-                });
-            };
-
-            panel.appendChild(editButton);
-            panel.appendChild(deleteButton);
+            editIcon.addEventListener('click', () => openEditModal(info));
+            deleteIcon.addEventListener('click', () => confirmDeletePanel(info.id));
+        } else {
+            editIcon.style.display = 'none';
+            deleteIcon.style.display = 'none';
         }
 
-        panel.appendChild(title);
-        panel.appendChild(description);
         principalPanel.appendChild(panel);
     });
 }
 
-// Función para abrir el modal de edición
+// Función para abrir el modal de edición de paneles
 function openEditModal(info) {
-    currentInfoId = info.id;
-    currentInfoType = info.section;
-
     editIdInput.value = info.id;
     editTypeInput.value = info.section;
     editTitleInput.value = info.title;
     editDescriptionInput.value = info.description;
-
     editModal.style.display = 'block';
 }
 
-// Función para cerrar el modal de edición
+// Cerrar el modal de edición al hacer clic en la 'x'
 closeModalBtn.addEventListener('click', () => {
     editModal.style.display = 'none';
 });
 
-// Función para enviar la edición del panel de información
+// Manejar el envío del formulario de edición de paneles
 editForm.addEventListener('submit', async (e) => {
     e.preventDefault();
-    showLoader();
+    const id = editIdInput.value;
+    const section = editTypeInput.value;
+    const title = editTitleInput.value.trim();
+    const description = editDescriptionInput.value.trim();
 
-    const infoId = editIdInput.value;
-    const infoType = editTypeInput.value;
-    const title = editTitleInput.value;
-    const description = editDescriptionInput.value;
+    if (!title || !description) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Atención',
+            text: 'El título y la descripción son obligatorios.',
+            confirmButtonText: 'Aceptar'
+        });
+        return;
+    }
 
     try {
-        const response = await fetch(`${apiUrlInfo}/update/${infoId}`, {
+        const response = await fetch(`${apiUrlInfo}/${id}`, {
             method: 'PUT',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
             },
+            body: JSON.stringify({ title, description }),
             credentials: 'include',
-            body: JSON.stringify({
-                title,
-                description,
-                section: infoType
-            })
         });
 
         if (response.ok) {
             Swal.fire({
                 icon: 'success',
                 title: '¡Éxito!',
-                text: 'Panel actualizado correctamente',
+                text: 'Información actualizada correctamente.',
                 confirmButtonText: 'Aceptar'
             }).then(() => {
-                loadInfoPanels();
                 editModal.style.display = 'none';
+                // Recargar los paneles de información para reflejar los cambios
+                loadInfoPanels();
             });
         } else {
             const errorData = await response.json();
@@ -408,23 +402,38 @@ editForm.addEventListener('submit', async (e) => {
             });
         }
     } catch (error) {
-        console.error('Error al actualizar el panel:', error);
+        console.error('Error al actualizar la información:', error);
         Swal.fire({
             icon: 'error',
             title: 'Error',
-            text: 'Ocurrió un error al actualizar el panel.',
+            text: 'Ocurrió un error al actualizar la información.',
             confirmButtonText: 'Aceptar'
         });
-    } finally {
-        hideLoader();  // Ocultar el loader al finalizar
     }
 });
 
+// Función para confirmar la eliminación de un panel
+function confirmDeletePanel(id) {
+    Swal.fire({
+        title: '¿Estás seguro?',
+        text: "¿Deseas eliminar este panel?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Sí, eliminar',
+        cancelButtonText: 'Cancelar'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            deleteInfoPanel(id);
+        }
+    });
+}
+
 // Función para eliminar un panel de información
-async function deleteInfo(id) {
-    showLoader();
+async function deleteInfoPanel(id) {
     try {
-        const response = await fetch(`${apiUrlInfo}/delete/${id}`, {
+        const response = await fetch(`${apiUrlInfo}/${id}`, {
             method: 'DELETE',
             credentials: 'include',
         });
@@ -433,9 +442,10 @@ async function deleteInfo(id) {
             Swal.fire({
                 icon: 'success',
                 title: '¡Éxito!',
-                text: 'Panel eliminado correctamente',
+                text: 'Panel eliminado correctamente.',
                 confirmButtonText: 'Aceptar'
             }).then(() => {
+                // Recargar los paneles de información para reflejar los cambios
                 loadInfoPanels();
             });
         } else {
@@ -455,54 +465,68 @@ async function deleteInfo(id) {
             text: 'Ocurrió un error al eliminar el panel.',
             confirmButtonText: 'Aceptar'
         });
-    } finally {
-        hideLoader();  // Ocultar el loader al finalizar
     }
 }
 
-// Función para abrir el modal de agregar nuevo panel
-agregarPanelBtn.addEventListener('click', () => {
-    addModal.style.display = 'block';
-});
+// Agregar Nuevos Paneles de Información
 
-// Función para cerrar el modal de agregar
+// Asignar evento al botón de agregar panel
+function attachAddPanelEvent() {
+    if (agregarPanelBtn && userRole === 'admin') {
+        agregarPanelBtn.addEventListener('click', openAddModal);
+    }
+}
+
+// Función para abrir el modal de agregar panel
+function openAddModal() {
+    addTitleInput.value = '';
+    addDescriptionInput.value = '';
+    addModal.style.display = 'block';
+}
+
+// Cerrar el modal de agregar panel al hacer clic en la 'x'
 closeAddModalBtn.addEventListener('click', () => {
     addModal.style.display = 'none';
 });
 
-// Función para agregar un nuevo panel de información
+// Manejar el envío del formulario de agregar panel
 addForm.addEventListener('submit', async (e) => {
     e.preventDefault();
-    showLoader();
+    const section = addTypeInput.value; // 'microcreditos'
+    const title = addTitleInput.value.trim();
+    const description = addDescriptionInput.value.trim();
 
-    const title = addTitleInput.value;
-    const description = addDescriptionInput.value;
-    const section = addTypeInput.value; // Obtener el valor seleccionado en el modal
+    if (!title || !description) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Atención',
+            text: 'El título y la descripción son obligatorios.',
+            confirmButtonText: 'Aceptar'
+        });
+        return;
+    }
 
     try {
-        const response = await fetch(`${apiUrlInfo}/create`, {
+        const response = await fetch(`${apiUrlInfo}`, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
             },
+            body: JSON.stringify({ title, description, section }),
             credentials: 'include',
-            body: JSON.stringify({
-                title,
-                description,
-                section
-            })
         });
 
         if (response.ok) {
+            const data = await response.json();
             Swal.fire({
                 icon: 'success',
                 title: '¡Éxito!',
-                text: 'Panel agregado correctamente',
+                text: 'Panel agregado correctamente.',
                 confirmButtonText: 'Aceptar'
             }).then(() => {
-                loadInfoPanels();
                 addModal.style.display = 'none';
-                addForm.reset();
+                // Recargar los paneles de información para incluir el nuevo panel
+                loadInfoPanels();
             });
         } else {
             const errorData = await response.json();
@@ -521,31 +545,107 @@ addForm.addEventListener('submit', async (e) => {
             text: 'Ocurrió un error al agregar el panel.',
             confirmButtonText: 'Aceptar'
         });
-    } finally {
-        hideLoader();  // Ocultar el loader al finalizar
     }
 });
 
-// Función para verificar autenticación
+// Función para comprobar si la sesión está activa y obtener el rol
 async function checkAuth() {
     try {
-        const response = await fetch(apiUrlAuth, {
+        const response = await fetch(`${apiUrlAuth}/check`, {
             method: 'GET',
             credentials: 'include'
         });
 
         if (response.ok) {
-            const authData = await response.json();
-            isAuthenticated = authData.isAuthenticated;
-            userRole = authData.role;
+            const data = await response.json();
+            if (data.authenticated) {
+                handleAuthenticated(data.user.role);
+            } else {
+                handleUnauthenticated();
+            }
         } else {
-            throw new Error('No autenticado');
+            handleUnauthenticated();
         }
     } catch (error) {
-        console.error('Error en la autenticación:', error);
-        window.location.href = '/login'; // Redirigir al login si no está autenticado
+        console.error('Error al verificar autenticación:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'No se pudo verificar la autenticación. Por favor, inténtalo de nuevo más tarde.',
+        });
+        handleUnauthenticated();
     }
 }
 
-// Inicializar la aplicación
+// Función para manejar usuarios autenticados
+function handleAuthenticated(role) {
+    isAuthenticated = true;
+    userRole = role;
+
+    // Agregar clase 'admin' al body si el usuario es admin
+    if (userRole === 'admin') {
+        document.body.classList.add('admin');
+    }
+
+    // Mostrar el formulario de subida de archivos si es admin
+    if (uploadForm) {
+        if (userRole === 'admin') {
+            uploadForm.style.display = 'block';
+        } else {
+            uploadForm.style.display = 'none';
+        }
+    }
+
+    // Mostrar la sección de archivos subidos
+    if (fileList) {
+        document.getElementById('archivos-subidos').style.display = 'block';
+    }
+    // Ajustar la visibilidad de los botones de eliminar
+    adjustDeleteButtonsVisibility();
+
+    if (agregarPanelBtn) {
+        if (userRole === 'admin') {
+            agregarPanelBtn.style.display = 'inline-block'; // Mostrar solo si es admin
+        } else {
+            agregarPanelBtn.style.display = 'none'; // Ocultar si no es admin
+        }
+    }
+
+    // Asignar evento al botón de agregar panel
+    attachAddPanelEvent();
+}
+
+// Función para manejar usuarios no autenticados
+function handleUnauthenticated() {
+    isAuthenticated = false;
+    userRole = null;
+
+    // Ocultar el formulario de subida de archivos
+    if (uploadForm) {
+        uploadForm.style.display = 'none';
+    }
+
+    // Mostrar solo la sección de archivos subidos
+    if (fileList) {
+        document.getElementById('archivos-subidos').style.display = 'block';
+    }
+
+    // Asegurarse de que los botones de eliminar estén ocultos
+    document.querySelectorAll('.delete-button').forEach(button => {
+        button.style.display = 'none';
+    });
+
+    // Remover clase 'admin' del body si existía
+    document.body.classList.remove('admin');
+
+    // Ocultar el botón de agregar panel
+    if (agregarPanelBtn) {
+        agregarPanelBtn.style.display = 'none';
+    }
+
+    window.location.href = '../index.html';
+}
+
+
+// Inicializar la aplicación al cargar el DOM
 document.addEventListener('DOMContentLoaded', initApp);
