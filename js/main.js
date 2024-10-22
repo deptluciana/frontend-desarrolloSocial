@@ -24,12 +24,12 @@ function hideLoader() {
 
 // Inicializar la aplicación
 async function initApp() {
-  showLoader(); 
+  showLoader();
 
   try {
-    await checkAuth();  
- 
-    hideLoader(); 
+    await checkAuth();  // Verificar autenticación al iniciar la app
+
+    hideLoader();
   } catch (error) {
     console.error('Error durante la inicialización:', error);
     Swal.fire({
@@ -38,10 +38,10 @@ async function initApp() {
       text: 'Ocurrió un error al cargar la aplicación. Por favor, intenta de nuevo más tarde.',
       confirmButtonText: 'Aceptar'
     });
-    hideLoader(); 
+    hideLoader();
   }
 
-  attachClickHandlers();  
+  attachClickHandlers();  // Asociar eventos de clic después de inicializar
 }
 
 // Manejo de la barra de navegación
@@ -111,6 +111,7 @@ function handleAuthenticatedUser(role) {
   document.querySelectorAll('.authenticated').forEach(el => el.style.display = 'block');
   document.querySelectorAll('.admin-only').forEach(el => el.style.display = (role === 'admin') ? 'block' : 'none');
 
+  // Cerrar modal de login si está abierto
   closeModalFunction(loginModal);
   closeModalFunction(registerModal);
 }
@@ -135,18 +136,20 @@ function handleButtonClick(event) {
   }
 
   if (!isAuthenticated) {
-    openLoginModal(); // Mostrar el modal solo si no está autenticado
+    // Mostrar el modal solo si el usuario NO está autenticado
+    openLoginModal();
   } else {
-    redirectToPage(targetPage); // Redirigir directamente si está autenticado
+    // Si está autenticado, redirigir directamente a la página sin mostrar el modal
+    redirectToPage(targetPage);
   }
 }
 
 function attachClickHandlers() {
   document.querySelectorAll('.btn, .tarjeta .boton').forEach(button => {
-    button.classList.add('disabled'); // Añadir una clase 'disabled' para desactivar
     button.addEventListener('click', handleButtonClick);
   });
 }
+
 
 // Redirección de páginas
 function redirectToPage(page) {
