@@ -50,12 +50,12 @@ function hideLoader() {
 
 // Función de inicialización
 async function initApp() {
-    showLoader(); 
+    showLoader();
     try {
-        await checkAuth();  
-        await Promise.all([loadFiles(), loadInfoPanels()]); 
+        await checkAuth();
+        await Promise.all([loadFiles(), loadInfoPanels()]);
 
-        hideLoader(); 
+        hideLoader();
     } catch (error) {
         console.error('Error durante la inicialización:', error);
         Swal.fire({
@@ -80,6 +80,7 @@ fileInput.addEventListener('change', () => {
 // Manejar la subida de archivos
 uploadForm.addEventListener('submit', async (e) => {
     e.preventDefault();
+    showLoader();
     const file = fileInput.files[0];
 
     if (!file) {
@@ -94,7 +95,7 @@ uploadForm.addEventListener('submit', async (e) => {
 
     const formData = new FormData();
     formData.append('file', file);
-    formData.append('section', section); 
+    formData.append('section', section);
 
     try {
         const response = await fetch(`${apiUrlFile}/upload`, {
@@ -130,6 +131,8 @@ uploadForm.addEventListener('submit', async (e) => {
             text: 'Ocurrió un error al subir el archivo.',
             confirmButtonText: 'Aceptar'
         });
+    } finally {
+        hideLoader();  // Ocultar el loader al finalizar
     }
 });
 
@@ -222,6 +225,7 @@ function adjustDeleteButtonsVisibility() {
 
 // Función para eliminar un archivo
 async function deleteFile(id) {
+    showLoader();
     try {
         const response = await fetch(`${apiUrlFile}/delete/${id}`, {
             method: 'DELETE',
@@ -255,6 +259,8 @@ async function deleteFile(id) {
             text: 'Ocurrió un error al eliminar el archivo.',
             confirmButtonText: 'Aceptar'
         });
+    } finally {
+        hideLoader();  // Ocultar el loader al finalizar
     }
 }
 
