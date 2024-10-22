@@ -264,7 +264,7 @@ function handleAuthenticated(role) {
         document.getElementById('archivos-subidos').style.display = 'block';
     }
 
-    window.location.href = '../index.html';
+    
 }
 
 // Función para comprobar si la sesión está activa y obtener el rol
