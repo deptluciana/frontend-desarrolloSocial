@@ -201,7 +201,6 @@ function renderUsers(users) {
         users.forEach(user => {
             const row = document.createElement('tr');
             row.innerHTML = `
-                <td>${user.id}</td>
                 <td>${user.username}</td>
                 <td>${user.email}</td>
                 <td>${user.first_name}</td>
