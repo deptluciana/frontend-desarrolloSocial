@@ -201,7 +201,6 @@ function renderUsers(users) {
         users.forEach(user => {
             const row = document.createElement('tr');
             row.innerHTML = `
-                <td>${user.id}</td>
                 <td>${user.username}</td>
                 <td>${user.email}</td>
                 <td>${user.first_name}</td>
@@ -336,13 +335,13 @@ document.getElementById('usersBody').addEventListener('click', (event) => {
         const userRow = event.target.closest('tr');
         const userData = {
             id: userId,
-            username: userRow.cells[1].textContent,
-            email: userRow.cells[2].textContent,
-            first_name: userRow.cells[3].textContent,
-            last_name: userRow.cells[4].textContent,
-            phone: userRow.cells[5].textContent,
-            address: userRow.cells[6].textContent,
-            role: userRow.cells[7].textContent,
+            username: userRow.cells[0].textContent,
+            email: userRow.cells[1].textContent,
+            first_name: userRow.cells[2].textContent,
+            last_name: userRow.cells[3].textContent,
+            phone: userRow.cells[4].textContent,
+            address: userRow.cells[5].textContent,
+            role: userRow.cells[6].textContent,
         };
 
         // Rellenar el formulario de edición
