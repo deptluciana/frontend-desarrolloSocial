@@ -32,7 +32,7 @@ document.getElementById('reset-password-form').addEventListener('submit', async 
       responseMessage.textContent = 'Contraseña restablecida con éxito.';
       // Redirigir al login después de unos segundos
       setTimeout(() => {
-        window.location.href = '/frontend/index.html';
+        window.location.href = 'https://www.secretariaarticulacionterritorial.com/';
       }, 2000);
     } else {
       responseMessage.style.color = 'red';
