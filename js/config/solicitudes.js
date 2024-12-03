@@ -98,7 +98,7 @@ function renderSolicitudes(solicitudes) {
                 <td>${solicitud.phone || 'N/A'}</td>
                 <td>${solicitud.address || 'N/A'}</td>
                 <td>
-                    <button class="btn-success acceptSolicitudBtn" data-id="${solicitud.id}">Aceptar</button>
+                    <button class="btn-secondary acceptSolicitudBtn" data-id="${solicitud.id}">Aceptar</button>
                     <button class="btn-danger rejectSolicitudBtn" data-id="${solicitud.id}">Rechazar</button>
                 </td>
             `;

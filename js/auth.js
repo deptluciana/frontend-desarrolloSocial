@@ -25,6 +25,7 @@ const authModule = (() => {
     if (modal) {
       modal.classList.remove('show');
       document.body.style.overflow = 'auto';
+      resetForms();
     }
   }
 
@@ -176,6 +177,21 @@ const authModule = (() => {
       errorMessage.textContent = 'Error en el registro.';
       console.error('Error en el registro:', error);
     }
+  }
+
+  // Función para limpiar los formularios
+  function resetForms() {
+    // Seleccionamos los formularios
+    const loginForm = document.getElementById('loginForm');
+    const registerForm = document.getElementById('registerForm');
+
+    // Resetear los valores de los formularios
+    loginForm.reset();
+    registerForm.reset();
+
+    // Limpiar mensajes de error, si los hay
+    document.getElementById('error-message').textContent = '';
+    document.getElementById('error-message-register').textContent = '';
   }
 
   // Añadir eventos a los formularios
