@@ -146,7 +146,7 @@ const authModule = (() => {
     const errorMessage = document.getElementById('error-message-register');
 
     try {
-      const response = await fetch(`${apiUrlAuth}/register`, {
+      const response = await fetch(`${apiUrlAuth}/register-pending`, { // Usar el nuevo endpoint
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -159,17 +159,18 @@ const authModule = (() => {
 
       if (response.ok) {
         Swal.fire({
-          icon: 'success',
-          title: 'Registrado',
-          text: 'Registro exitoso. Puedes iniciar sesión ahora.',
-          timer: 2000,
+          icon: 'info',
+          title: 'Solicitud enviada',
+          text: 'Tu solicitud de registro está pendiente de aprobación.',
+          timer: 3000,
           showConfirmButton: true
         }).then(() => {
           closeModalFunction(registerModal);
-          openModal(loginModal);
         });
       } else {
-        errorMessage.textContent = data.message || 'Error en el registro.';
+        errorMessage.textContent = Array.isArray(data.message)
+          ? data.message.join(' ')
+          : data.message || 'Error en el registro.';
       }
     } catch (error) {
       errorMessage.textContent = 'Error en el registro.';
