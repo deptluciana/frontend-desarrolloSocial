@@ -132,6 +132,7 @@ async function acceptSolicitud(solicitudId) {
 
 // Rechazar solicitud
 async function rejectSolicitud(solicitudId) {
+    showLoader();
     try {
         const response = await fetch(`${apiUrlSolicitudes}/${solicitudId}/reject`, {
             method: 'POST',
@@ -139,14 +140,16 @@ async function rejectSolicitud(solicitudId) {
         });
 
         if (response.ok) {
-            Swal.fire('Éxito', 'Solicitud rechazada.', 'success');
-            fetchSolicitudes(); // Actualizar la tabla después de rechazar
+            Swal.fire('Éxito', 'Solicitud rechazada.', 'success')
+                .then(() => window.location.reload());
         } else {
             Swal.fire('Error', 'No se pudo rechazar la solicitud.', 'error');
         }
     } catch (error) {
         console.error('Error al rechazar la solicitud:', error);
         Swal.fire('Error', 'Error al rechazar la solicitud.', 'error');
+    } finally {
+        hideLoader();
     }
 }
 
