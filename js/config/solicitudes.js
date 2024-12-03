@@ -78,10 +78,6 @@ async function fetchSolicitudes() {
     }
 }
 
-const btnAct = document.getElementById("actualizarTabla")
-
-btnAct.addEventListener("click", fetchSolicitudes )
-
 // Renderizar solicitudes en la tabla
 function renderSolicitudes(solicitudes) {
     const solicitudesBody = document.getElementById('solicitudesBody');
@@ -122,7 +118,7 @@ async function acceptSolicitud(solicitudId) {
 
         if (response.ok) {
             Swal.fire('Éxito', 'Solicitud aceptada.', 'success');
-            fetchSolicitudes(); // Actualizar la tabla después de aceptar
+            fetchSolicitudes(); 
         } else {
             Swal.fire('Error', 'No se pudo aceptar la solicitud.', 'error');
         }
@@ -131,6 +127,7 @@ async function acceptSolicitud(solicitudId) {
         Swal.fire('Error', 'Error al aceptar la solicitud.', 'error');
     } finally {
         hideLoader();
+        fetchSolicitudes(); 
     }
 }
 
