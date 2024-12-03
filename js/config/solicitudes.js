@@ -117,8 +117,8 @@ async function acceptSolicitud(solicitudId) {
         });
 
         if (response.ok) {
-            Swal.fire('Éxito', 'Solicitud aceptada.', 'success');
-            fetchSolicitudes(); 
+            Swal.fire('Éxito', 'Solicitud aceptada.', 'success')
+                .then(() => window.location.reload());
         } else {
             Swal.fire('Error', 'No se pudo aceptar la solicitud.', 'error');
         }
@@ -127,13 +127,11 @@ async function acceptSolicitud(solicitudId) {
         Swal.fire('Error', 'Error al aceptar la solicitud.', 'error');
     } finally {
         hideLoader();
-        fetchSolicitudes(); 
     }
 }
 
 // Rechazar solicitud
 async function rejectSolicitud(solicitudId) {
-    showLoader();
     try {
         const response = await fetch(`${apiUrlSolicitudes}/${solicitudId}/reject`, {
             method: 'POST',
@@ -149,8 +147,6 @@ async function rejectSolicitud(solicitudId) {
     } catch (error) {
         console.error('Error al rechazar la solicitud:', error);
         Swal.fire('Error', 'Error al rechazar la solicitud.', 'error');
-    } finally {
-        hideLoader();
     }
 }
 
