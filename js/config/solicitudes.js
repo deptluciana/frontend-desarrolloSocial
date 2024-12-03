@@ -70,6 +70,7 @@ async function fetchSolicitudes() {
         }
 
         const solicitudes = await response.json();
+        console.log('Solicitudes recibidas:', solicitudes);
         renderSolicitudes(solicitudes);
     } catch (error) {
         console.error('Error al obtener las solicitudes:', error);
