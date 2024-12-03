@@ -57,7 +57,6 @@ function handleUnauthenticated() {
 
 // Obtener y mostrar solicitudes
 async function fetchSolicitudes() {
-    showLoader();
     try {
         const response = await fetch(apiUrlSolicitudes, {
             method: 'GET',
@@ -70,12 +69,9 @@ async function fetchSolicitudes() {
         }
 
         const solicitudes = await response.json();
-        console.log('Solicitudes recibidas:', solicitudes);
         renderSolicitudes(solicitudes);
     } catch (error) {
         console.error('Error al obtener las solicitudes:', error);
-    } finally {
-        hideLoader();
     }
 }
 
@@ -121,8 +117,8 @@ async function acceptSolicitud(solicitudId) {
         });
 
         if (response.ok) {
-            Swal.fire('Éxito', 'Solicitud aceptada.', 'success')
-                .then(() => window.location.reload());
+            Swal.fire('Éxito', 'Solicitud aceptada.', 'success');
+            fetchSolicitudes()
         } else {
             Swal.fire('Error', 'No se pudo aceptar la solicitud.', 'error');
         }
@@ -144,8 +140,8 @@ async function rejectSolicitud(solicitudId) {
         });
 
         if (response.ok) {
-            Swal.fire('Éxito', 'Solicitud rechazada.', 'success')
-                .then(() => window.location.reload());
+            Swal.fire('Éxito', 'Solicitud rechazada.', 'success');
+            fetchSolicitudes();
         } else {
             Swal.fire('Error', 'No se pudo rechazar la solicitud.', 'error');
         }
