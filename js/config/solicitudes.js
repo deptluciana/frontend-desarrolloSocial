@@ -81,30 +81,33 @@ async function fetchSolicitudes() {
 // Renderizar solicitudes en la tabla
 function renderSolicitudes(solicitudes) {
     const solicitudesBody = document.getElementById('solicitudesBody');
-    solicitudesBody.innerHTML = '';
+    solicitudesBody.innerHTML = ''; // Limpiar el contenido actual
 
-    if (solicitudes.length === 0) {
+    // Verificar si no hay solicitudes
+    if (!solicitudes || solicitudes.length === 0) {
         const row = document.createElement('tr');
-        row.innerHTML = `<td colspan="5">No se encontraron solicitudes.</td>`;
+        row.innerHTML = `<td colspan="7" class="text-center">No hay registros pendientes.</td>`; // Ajusta 'colspan' según el número de columnas en tu tabla
         solicitudesBody.appendChild(row);
-    } else {
-        solicitudes.forEach(solicitud => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${solicitud.username}</td>
-                <td>${solicitud.email}</td>
-                <td>${solicitud.first_name}</td>
-                <td>${solicitud.last_name}</td>
-                <td>${solicitud.phone || 'N/A'}</td>
-                <td>${solicitud.address || 'N/A'}</td>
-                <td>
-                    <button class="btn-secondary acceptSolicitudBtn" data-id="${solicitud.id}">Aceptar</button>
-                    <button class="btn-danger rejectSolicitudBtn" data-id="${solicitud.id}">Rechazar</button>
-                </td>
-            `;
-            solicitudesBody.appendChild(row);
-        });
+        return;
     }
+
+    // Renderizar las solicitudes si existen
+    solicitudes.forEach(solicitud => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${solicitud.username}</td>
+            <td>${solicitud.email}</td>
+            <td>${solicitud.first_name}</td>
+            <td>${solicitud.last_name}</td>
+            <td>${solicitud.phone || 'N/A'}</td>
+            <td>${solicitud.address || 'N/A'}</td>
+            <td>
+                <button class="btn-secondary acceptSolicitudBtn" data-id="${solicitud.id}">Aceptar</button>
+                <button class="btn-danger rejectSolicitudBtn" data-id="${solicitud.id}">Rechazar</button>
+            </td>
+        `;
+        solicitudesBody.appendChild(row);
+    });
 }
 
 // Aceptar solicitud
