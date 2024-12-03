@@ -78,6 +78,10 @@ async function fetchSolicitudes() {
     }
 }
 
+const btnAct = document.getElementById("actualizarTabla")
+
+btnAct.addEventListener("click", fetchSolicitudes )
+
 // Renderizar solicitudes en la tabla
 function renderSolicitudes(solicitudes) {
     const solicitudesBody = document.getElementById('solicitudesBody');

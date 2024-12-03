@@ -28,7 +28,8 @@
                         <a class="navlink" href="users.html"><i class="fas fa-user-cog"></i> Usuarios</a>
                     </li>
                     <li class="listItem admin-only">
-                        <a class="navlink" href="solicitudes.html"><i class="fas fa-user-check"></i> Solicitudes de registro</a>
+                        <a class="navlink" href="solicitudes.html"><i class="fas fa-user-check"></i> Solicitudes de
+                            registro</a>
                     </li>
                     <li class="listItem authenticated profile-link">
                         <a class="navlink" href="profile.html"><i class="fas fa-user"></i> Perfil</a>
@@ -45,18 +46,10 @@
     <div id="loader" class="loader">
         <div class="spinner"></div>
     </div>
-
+    <button id="actualizarTabla">Actualizar</button>
     <main>
         <div class="containerPrincipal">
             <h1>Solicitudes de Registro</h1>
-            <div class="search-container">
-                <label for="searchType">Buscar:</label>
-                <select id="searchType">
-                    <option value="username">Nombre de Usuario</option>
-                    <option value="email">Correo Electrónico</option>
-                </select>
-                <input type="text" id="searchInput" placeholder="Buscar...">
-            </div>
             <div class="table-responsive">
                 <div id="requestsTableContainer">
                     <table id="requestsTable">
